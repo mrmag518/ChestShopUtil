@@ -10,8 +10,27 @@ commands:
     usage: /<command> [args]
     aliases: [csu, chestshoputilities, csutil]
 permissions:
-  csu.bypass.air-shops:
+  csu.admin:
     default: op
+    children:
+      csu.bypass.global-maxbuy: true
+      csu.bypass.global-maxsell: true
+      csu.world.create.*: true
+      csu.bypass.maxbuy.*: true
+      csu.bypass.maxsell.*: true
+      csu.maxshops.*: true
+      csu.bypass.item.*: true
+      csu.getupdates: true
+      csu.bypass.time-period: true
+      csu.command.*: true
+  csu.command.*:
+    default: op
+    children:
+      csu.command.updatecheck: true
+      csu.command.version: true
+      csu.command.reload: true
+      csu.command.help: true
+      csu.command.main: true
   csu.bypass.global-maxbuy:
     default: op
   csu.bypass.global-maxsell:
