@@ -1,0 +1,31 @@
+package com.mrmag518.ChestShopUtil.Files;
+
+public enum LocalOutput {
+    SHOP_PREFIX(Local.getConfig().getString("SHOP_PREFIX")),
+    LINE(Local.getConfig().getString("LINE")),
+    BUY_PRICE_EXCEEDS_MAX(Local.getConfig().getString("BUY_PRICE_EXCEEDS_MAX")),
+    SELL_PRICE_EXCEEDS_MAX(Local.getConfig().getString("SELL_PRICE_EXCEEDS_MAX")),
+    CANNOT_CREATE_SHOP_IN_THIS_WORLD(Local.getConfig().getString("CANNOT_CREATE_SHOP_IN_THIS_WORLD")),
+    BUY_PRICE_EXCEEDS_MAX_FOR_ITEM(Local.getConfig().getString("BUY_PRICE_EXCEEDS_MAX_FOR_ITEM")),
+    SELL_PRICE_EXCEEDS_MAX_FOR_ITEM(Local.getConfig().getString("SELL_PRICE_EXCEEDS_MAX_FOR_ITEM")),
+    //ITEM_CURRENCY_PRICE_EXCEEDS_MAX(Local.getConfig().getString("ITEM_CURRENCY_PRICE_EXCEEDS_MAX")),
+    //NOT_ENOUGH_ITEMS_IN_INV(Local.getConfig().getString("NOT_ENOUGH_ITEMS_IN_INV")),
+    //ITEM_VALUE_ABOVE_SHOP_PRICE(Local.getConfig().getString("ITEM_VALUE_ABOVE_SHOP_PRICE")),
+    //ITEM_CURRENCY_BUY_SUCCESS(Local.getConfig().getString("ITEM_CURRENCY_BUY_SUCCESS")),
+    SHOP_CREATION_LIMIT_REACHED(Local.getConfig().getString("SHOP_CREATION_LIMIT_REACHED")),
+    ITEM_IS_DISALLOWED(Local.getConfig().getString("ITEM_IS_DISALLOWED")),
+    CANNOT_TRADE_IN_THIS_WORLD(Local.getConfig().getString("CANNOT_TRADE_IN_THIS_WORLD")),
+    CANNOT_TRADE_AT_THIS_MOMENT(Local.getConfig().getString("CANNOT_TRADE_AT_THIS_MOMENT")),
+    CANNOT_ACCESS_THIS_COMMAND(Local.getConfig().getString("CANNOT_ACCESS_THIS_COMMAND")),
+    COOLDOWN_ACTIVE(Local.getConfig().getString("COOLDOWN_ACTIVE"));
+    
+    private String output;
+    
+    private LocalOutput(String msg) {
+        output = msg;
+    }
+    
+    public String getRawOutput() {
+        return output;
+    }
+}
