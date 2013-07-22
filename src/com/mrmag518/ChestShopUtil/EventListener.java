@@ -73,8 +73,8 @@ public class EventListener implements Listener {
                  }
             }
             
-            if(canCreate > 508) {
-                canCreate = 508;
+            if(canCreate > ShopDB.maxShopCap) {
+                canCreate = ShopDB.maxShopCap;
             } else if(canCreate < 0) {
                 if(ShopDB.getShopsMade(p.getName()) >= Config.maxShops) {
                     event.setOutcome(PreShopCreationEvent.CreationOutcome.OTHER);
