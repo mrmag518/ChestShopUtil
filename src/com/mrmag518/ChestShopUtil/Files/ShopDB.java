@@ -120,6 +120,7 @@ public class ShopDB {
     }
     
     public static int getDailySoldAmount(String player, boolean adminShop) {
+        player = player.toLowerCase();
         int i = (adminShop)? getDB().getInt("Players." + player + ".AdminSoldToday") : getDB().getInt("Players." + player + ".SoldToday");
         return i;
     }
@@ -137,6 +138,7 @@ public class ShopDB {
     }
     
     public static int getDailyBoughtAmount(String player, boolean adminShop) {
+        player = player.toLowerCase();
         int i = (adminShop)? getDB().getInt("Players." + player + ".AdminBoughtToday") : getDB().getInt("Players." + player + ".BoughtToday");
         return i;
     }
