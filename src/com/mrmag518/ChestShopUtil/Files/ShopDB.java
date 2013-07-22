@@ -45,10 +45,18 @@ public class ShopDB {
                 if(cs != null) {
                     for(String s : cs.getKeys(true)) {
                         if(!s.contains(".")) {
-                            cs.set(s + ".AdminSoldToday", 0);
-                            cs.set(s + ".SoldToday", 0);
-                            cs.set(s + ".AdminBoughtToday", 0);
-                            cs.set(s + ".BoughtToday", 0);
+                            if(cs.getInt(s + ".AdminSoldToday") > 0) {
+                                cs.set(s + ".AdminSoldToday", 0);
+                            }
+                            if(cs.getInt(s + ".SoldToday") > 0) {
+                                cs.set(s + ".SoldToday", 0);
+                            }
+                            if(cs.getInt(s + ".AdminBoughtToday") > 0) {
+                                cs.set(s + ".AdminBoughtToday", 0);
+                            }
+                            if(cs.getInt(s + ".BoughtToday") > 0) {
+                                cs.set(s + ".BoughtToday", 0);
+                            }
                         }
                     }
                     save();
