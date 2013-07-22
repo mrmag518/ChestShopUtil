@@ -17,6 +17,10 @@ public class ShopDB {
     private static FileConfiguration database = null;
     private static File databaseFile = null;
     
+    // ----
+    public static int maxShopCap;
+    // ----
+    
     public static void properLoad() {
         if(use()) {
             reload();
@@ -63,7 +67,9 @@ public class ShopDB {
                 }
             }
         }
+        database.addDefault("Util.ShopPermSearchCap", 508);
         
+        cacheVariables();
         getDB().options().copyDefaults(true);
         save();
     }
@@ -91,6 +97,10 @@ public class ShopDB {
         } catch (IOException ex) {
             Logger.getLogger(JavaPlugin.class.getName()).log(Level.SEVERE, "Could not save shops.yml to " + databaseFile, ex);
         }
+    }
+    
+    public static void cacheVariables() {
+        maxShopCap = getDB().getInt("Util.ShopPermSearchCap");
     }
     
     public static boolean use() {

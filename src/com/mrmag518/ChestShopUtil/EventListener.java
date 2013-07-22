@@ -60,14 +60,13 @@ public class EventListener implements Listener {
         }
         
         if(Config.maxShops > 0) {
-            int cap = 508;
             int canCreate = -1;
             
             if(p.hasPermission("csu.maxshops.*")) {
                 return;
             }
             
-            for(int i = 0; i < cap; i++) {
+            for(int i = 0; i < ShopDB.maxShopCap; i++) {
                  if(p.hasPermission("csu.maxshops." + i)) {
                      canCreate = i;
                      break;
