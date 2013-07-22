@@ -11,6 +11,7 @@ import com.mrmag518.ChestShopUtil.Util.Updater;
 import java.io.IOException;
 
 import javax.annotation.Nullable;
+import org.bukkit.Bukkit;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -18,14 +19,17 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
 public class CSU extends JavaPlugin {
     public boolean updateFound = false;
     public String verionFound = "";
     private Plugin chestshop = null;
+    public BukkitTask timeChecker = null;
     
     @Override
     public void onDisable() {
+        timeChecker = null;
         try {
             Cooldown.clear();
         } catch(Exception e) {} // An exception is usually thrown when disabling, if the .jar file has been modified.
@@ -57,8 +61,23 @@ public class CSU extends JavaPlugin {
         } catch (IOException e) {
         }
         
+        if(ShopDB.use()) {
+            startTimeCheck();
+        }
+        
         getCommand("chestshoputil").setExecutor(new Commands(this));
         Log.info("Version " + getVersion() + " enabled.");
+    }
+    
+    public void startTimeCheck() {
+        if(timeChecker == null) {
+            Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
+                @Override
+                public void run() {
+                    ShopDB.properLoad();
+                }
+            }, 864000, 864000); // Run every 12th hour.
+        }
     }
     
     public String getVersion() {

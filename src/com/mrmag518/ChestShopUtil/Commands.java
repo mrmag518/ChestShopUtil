@@ -54,6 +54,10 @@ public class Commands implements CommandExecutor {
                             Config.load();
                             Local.load();
                             ShopDB.properLoad();
+                            
+                            if(ShopDB.use()) {
+                                plugin.startTimeCheck();
+                            }
                             s.sendMessage(ChatColor.GRAY + "ChestShopUtil v" + plugin.getVersion() + ChatColor.BLUE + " reloaded.");
                         } else {
                             s.sendMessage(Local.s(LocalOutput.CANNOT_ACCESS_THIS_COMMAND));
@@ -109,6 +113,10 @@ public class Commands implements CommandExecutor {
                         Config.load();
                         Local.load();
                         ShopDB.properLoad();
+                        
+                        if(ShopDB.use()) {
+                            plugin.startTimeCheck();
+                        }
                         s.sendMessage("ChestShopUtil v" + plugin.getVersion() + " reloaded.");
                     } else if(args[0].equalsIgnoreCase("version")) {
                         s.sendMessage("ChestShopUtil v" + plugin.getVersion());
