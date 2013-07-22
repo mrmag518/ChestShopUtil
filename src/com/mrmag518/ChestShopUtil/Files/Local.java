@@ -22,7 +22,7 @@ public class Local {
             try {
                 f.createNewFile();
             } catch (IOException ex) {
-                Log.severe("An error occured while creating the config.yml file!");
+                Log.severe("An error occured while creating the local.yml file!");
                 ex.printStackTrace();
             }
         }
