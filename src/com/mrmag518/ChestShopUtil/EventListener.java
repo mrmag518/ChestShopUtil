@@ -6,6 +6,8 @@ import com.Acrobot.ChestShop.Events.PreShopCreationEvent;
 import com.Acrobot.ChestShop.Events.PreTransactionEvent;
 import com.Acrobot.ChestShop.Events.ShopCreatedEvent;
 import com.Acrobot.ChestShop.Events.ShopDestroyedEvent;
+import com.Acrobot.ChestShop.Events.TransactionEvent;
+import com.Acrobot.ChestShop.Events.TransactionEvent.TransactionType;
 import com.Acrobot.ChestShop.Signs.ChestShopSign;
 import com.mrmag518.ChestShopUtil.Files.Config;
 import com.mrmag518.ChestShopUtil.Files.Local;
@@ -61,7 +63,7 @@ public class EventListener implements Listener {
             int cap = 508;
             int canCreate = -1;
             
-            if(p.hasPermission("csu.maxshops.*") || p.hasPermission("csu.maxshops.-1")) {
+            if(p.hasPermission("csu.maxshops.*")) {
                 return;
             }
             
@@ -295,6 +297,108 @@ public class EventListener implements Listener {
             }
         }
         
+        if(ShopDB.use()) {
+            int amount = Integer.parseInt(event.getSign().getLine(ChestShopSign.QUANTITY_LINE));
+            
+            if(ChestShopSign.isAdminShop(event.getSign())) {
+                if(event.getTransactionType() == TransactionType.BUY) {
+                    int j = Config.maxDailyAdminShopBuy;
+                    
+                    if(j > 0) {
+                        if(p.hasPermission("csu.daily.adminshop.maxbuy.*")) {
+                            return;
+                        }
+                        int i = ShopDB.getDailyBoughtAmount(p.getName(), true);
+                        
+                        if(i >= j) {
+                            event.setCancelled(PreTransactionEvent.TransactionOutcome.OTHER);
+                            p.sendMessage(Local.s(LocalOutput.CANT_BUY_MORE_ADMINSHOP).replace("%limit%", String.valueOf(j)));
+                        } else {
+                            if(i+amount > j) {
+                                int overflow = (i + amount) - j;
+                                
+                                if(overflow > Config.maxBuyOverflow) {
+                                    event.setCancelled(PreTransactionEvent.TransactionOutcome.OTHER);
+                                    p.sendMessage(Local.s(LocalOutput.BUY_OVERFLOW_LIMIT));
+                                }
+                            }
+                        }
+                    }
+                } else if(event.getTransactionType() == TransactionType.SELL) {
+                    int j = Config.maxDailyAdminShopSell;
+                    
+                    if(j > 0) {
+                        if(p.hasPermission("csu.daily.adminshop.maxsell.*")) {
+                            return;
+                        }
+                        int i = ShopDB.getDailySoldAmount(p.getName(), true);
+                        
+                        if(i >= j) {
+                            event.setCancelled(PreTransactionEvent.TransactionOutcome.OTHER);
+                            p.sendMessage(Local.s(LocalOutput.CANT_SELL_MORE_ADMINSHOP).replace("%limit%", String.valueOf(Config.maxDailyAdminShopSell)));
+                        } else {
+                            if(i+amount > j) {
+                                int overflow = (i + amount) - j;
+                                
+                                if(overflow > Config.maxSellOverflow) {
+                                    event.setCancelled(PreTransactionEvent.TransactionOutcome.OTHER);
+                                    p.sendMessage(Local.s(LocalOutput.SELL_OVERFLOW_LIMIT));
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                if(event.getTransactionType() == TransactionType.BUY) {
+                    int j = Config.maxDailyShopBuy;
+                    
+                    if(j > 0) {
+                        if(p.hasPermission("csu.daily.shop.maxbuy.*")) {
+                            return;
+                        }
+                        int i = ShopDB.getDailyBoughtAmount(p.getName(), false);
+                        
+                        if(i >= j) {
+                            event.setCancelled(PreTransactionEvent.TransactionOutcome.OTHER);
+                            p.sendMessage(Local.s(LocalOutput.CANT_BUY_MORE_SHOP).replace("%limit%", String.valueOf(Config.maxDailyShopBuy)));
+                        } else {
+                            if(i+amount > j) {
+                                int overflow = (i + amount) - j;
+                                
+                                if(overflow > Config.maxBuyOverflow) {
+                                    event.setCancelled(PreTransactionEvent.TransactionOutcome.OTHER);
+                                    p.sendMessage(Local.s(LocalOutput.BUY_OVERFLOW_LIMIT));
+                                }
+                            }
+                        }
+                    }
+                } else if(event.getTransactionType() == TransactionType.SELL) {
+                    int j = Config.maxDailyShopSell;
+                    
+                    if(j > 0) {
+                        if(p.hasPermission("csu.daily.shop.maxsell.*")) {
+                            return;
+                        }
+                        int i = ShopDB.getDailySoldAmount(p.getName(), false);
+                        
+                        if(i >= j) {
+                            event.setCancelled(PreTransactionEvent.TransactionOutcome.OTHER);
+                            p.sendMessage(Local.s(LocalOutput.CANT_SELL_MORE_SHOP).replace("%limit%", String.valueOf(Config.maxDailyShopSell)));
+                        } else {
+                            if(i+amount > j) {
+                                int overflow = (i + amount) - j;
+                                
+                                if(overflow > Config.maxSellOverflow) {
+                                    event.setCancelled(PreTransactionEvent.TransactionOutcome.OTHER);
+                                    p.sendMessage(Local.s(LocalOutput.SELL_OVERFLOW_LIMIT));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
         if(!p.hasPermission("csu.bypass.time-period")) {
             for(String s : Config.tradePeriods) {
                 if(s != null) {
@@ -328,6 +432,37 @@ public class EventListener implements Listener {
                                 p.sendMessage(Local.s(LocalOutput.CANNOT_TRADE_AT_THIS_MOMENT));
                             }
                         }
+                    }
+                }
+            }
+        }
+    }
+    
+    @EventHandler
+    public void handlePostTransaction(TransactionEvent event) {
+        Player p = event.getClient();
+        
+        if(ShopDB.use()) {
+            int amount = Integer.parseInt(event.getSign().getLine(ChestShopSign.QUANTITY_LINE));
+            
+            if(ChestShopSign.isAdminShop(event.getSign())) {
+                if(event.getTransactionType() == TransactionType.BUY) {
+                    if(Config.maxDailyAdminShopBuy > 0) {
+                        ShopDB.incrementDailyBought(p.getName(), true, amount);
+                    }
+                } else if(event.getTransactionType() == TransactionType.SELL) {
+                    if(Config.maxDailyAdminShopSell > 0) {
+                        ShopDB.incrementDailySold(p.getName(), true, amount);
+                    }
+                }
+            } else {
+                if(event.getTransactionType() == TransactionType.BUY) {
+                    if(Config.maxDailyShopBuy > 0) {
+                        ShopDB.incrementDailyBought(p.getName(), false, amount);
+                    }
+                } else if(event.getTransactionType() == TransactionType.SELL) {
+                    if(Config.maxDailyShopSell > 0) {
+                        ShopDB.incrementDailySold(p.getName(), false, amount);
                     }
                 }
             }

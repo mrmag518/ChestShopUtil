@@ -29,6 +29,12 @@ public class Config {
     public static List<String> tradePeriods;
     public static boolean checkUpdates;
     public static boolean useMultiThread;
+    public static int maxDailyAdminShopBuy;
+    public static int maxDailyAdminShopSell;
+    public static int maxDailyShopBuy;
+    public static int maxDailyShopSell;
+    public static int maxBuyOverflow;
+    public static int maxSellOverflow;
     // ----
     
     public static void load() {
@@ -99,6 +105,26 @@ public class Config {
                 + ";1000ms = 1sec"
                 + ";A value of 0 will be ignored.");
         
+        config.addDefault("Daily.Max.Buy.AdminShop", 0, "Will prevent players from buying/selling too many items"
+                + ";from the specific shop type, per day."
+                + ";This will create a shops.yml file if one does exist."
+                + ";Which will be used as a database."
+                + ";"
+                + ";OverflowLimit - When a player trades with a shop without"
+                + ";having exceeded the limit, but the amount he is about"
+                + ";to buy/sell will make him exceed the limit."
+                + ";Example, ADude has bought 99/100 items, but the amount"
+                + ";he is about to buy is 5, he would exceed the limit with"
+                + ";104/100 items. Setting the OverflowLimit to 50 would allow"
+                + ";ADude to buy with a overflow of 50, which would mark him"
+                + ";having bought a total of 149/100 items.");
+        config.addDefault("Daily.Max.Buy.PlayerShop", 0, null);
+        config.addDefault("Daily.Max.Buy.OverflowLimit", 50, null);
+        
+        config.addDefault("Daily.Max.Sell.AdminShop", 0, null);
+        config.addDefault("Daily.Max.Sell.PlayerShop", 0, null);
+        config.addDefault("Daily.Max.Sell.OverflowLimit", 50, null);
+        
         /*config.addDefault("Item-Currency.Enabled", false, 
                   "Enable, Enables the item currency feature."
                 + ";Item-Currency will use items instead of virtual money."
@@ -132,6 +158,12 @@ public class Config {
         tradePeriods = Config.getConfig().getStringList("Disallowed-Time-Periods");
         checkUpdates = Config.getConfig().getBoolean("UpdateChecker.Enabled");
         useMultiThread = Config.getConfig().getBoolean("UpdateChecker.Use-Multi-Threading");
+        maxDailyAdminShopBuy = Config.getConfig().getInt("Daily.Max.Buy.AdminShop");
+        maxDailyAdminShopSell = Config.getConfig().getInt("Daily.Max.Sell.AdminShop");
+        maxDailyShopBuy = Config.getConfig().getInt("Daily.Max.Buy.PlayerShop");
+        maxDailyShopSell = Config.getConfig().getInt("Daily.Max.Sell.PlayerShop");
+        maxBuyOverflow = Config.getConfig().getInt("Daily.Max.Buy.OverflowLimit");
+        maxSellOverflow = Config.getConfig().getInt("Daily.Max.Sell.OverflowLimit");
     }
     
     private static Configuration getConfig() {

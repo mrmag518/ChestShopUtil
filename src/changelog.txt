@@ -1,0 +1,9 @@
+Version 1.1
+* shops.yml format has changed in order to give better support for additional entries.
+* Fix: Error being thrown when disabling plugin after having modified the .jar file.
+* Added per-player daily max buy & sell amount for both admin shops and normal shops.
+** This will be configurable per-item in the future.
+* 
+
+Version 1.0
+* Release

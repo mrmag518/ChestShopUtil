@@ -1,11 +1,13 @@
 package com.mrmag518.ChestShopUtil.Files;
 
 import com.mrmag518.ChestShopUtil.Util.Log;
+import com.mrmag518.ChestShopUtil.Util.Time;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.bukkit.configuration.ConfigurationSection;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -16,7 +18,7 @@ public class ShopDB {
     private static File databaseFile = null;
     
     public static void properLoad() {
-        if(Config.maxShops > 0) {
+        if(use()) {
             reload();
             load();
             reload();
@@ -26,6 +28,34 @@ public class ShopDB {
     
     private static void load() {
         database = getDB();
+        Time time = new Time();
+        long currTime = System.currentTimeMillis();
+        
+        if(database.get("Util.SystemMS") == null) {
+            database.set("Util.SystemMS", currTime);
+        } else {
+            long timeSet = database.getLong("Util.SystemMS");
+            long diff = currTime - timeSet;
+            
+            if(time.getHoursFromMS(diff) >= 24) {
+                database.set("Util.SystemMS", currTime);
+                
+                ConfigurationSection cs = database.getConfigurationSection("Players");
+                
+                if(cs != null) {
+                    for(String s : cs.getKeys(true)) {
+                        if(!s.contains(".")) {
+                            cs.set(s + ".AdminSoldToday", 0);
+                            cs.set(s + ".SoldToday", 0);
+                            cs.set(s + ".AdminBoughtToday", 0);
+                            cs.set(s + ".BoughtToday", 0);
+                        }
+                    }
+                    save();
+                }
+            }
+        }
+        
         getDB().options().copyDefaults(true);
         save();
     }
@@ -55,10 +85,62 @@ public class ShopDB {
         }
     }
     
+    public static boolean use() {
+        return Config.maxShops > 0 || Config.maxDailyAdminShopBuy > 0 || Config.maxDailyAdminShopSell > 0 || Config.maxDailyShopBuy > 0 || Config.maxDailyShopSell > 0;
+    }
+    
+    public static void incrementDailySold(String player, boolean adminShop, int amount) {
+        player = player.toLowerCase();
+        int i = getDailySoldAmount(player, adminShop) + amount;
+        
+        if(adminShop) {
+            getDB().set("Players." + player + ".AdminSoldToday", i);
+        } else {
+            getDB().set("Players." + player + ".SoldToday", i);
+        }
+        save();
+    }
+    
+    public static int getDailySoldAmount(String player, boolean adminShop) {
+        player = player.toLowerCase();
+        int i;
+        
+        if(adminShop) {
+            i = getDB().getInt("Players." + player + ".AdminSoldToday");
+        } else {
+            i = getDB().getInt("Players." + player + ".SoldToday");
+        }
+        return i;
+    }
+    
+    public static void incrementDailyBought(String player, boolean adminShop, int amount) {
+        player = player.toLowerCase();
+        int i = getDailyBoughtAmount(player, adminShop) + amount;
+        
+        if(adminShop) {
+            getDB().set("Players." + player + ".AdminBoughtToday", i);
+        } else {
+            getDB().set("Players." + player + ".BoughtToday", i);
+        }
+        save();
+    }
+    
+    public static int getDailyBoughtAmount(String player, boolean adminShop) {
+        player = player.toLowerCase();
+        int i;
+        
+        if(adminShop) {
+            i = getDB().getInt("Players." + player + ".AdminBoughtToday");
+        } else {
+            i = getDB().getInt("Players." + player + ".BoughtToday");
+        }
+        return i;
+    }
+    
     public static void incrementShopsMade(String player) {
         player = player.toLowerCase();
         int i = getShopsMade(player) + 1;
-        getDB().set(player + ".ShopsMade", i);
+        getDB().set("Players." + player + ".ShopsMade", i);
         save();
     }
     
@@ -67,16 +149,15 @@ public class ShopDB {
         int i = getShopsMade(player) - 1;
         
         if(i < 1) {
-            // Note to self: Can't remove whole player tree if additional entries is added in the future.
-            getDB().set(player, null);
+            getDB().set("Players." + player + ".ShopsMade", null);
         } else {
-            getDB().set(player + ".ShopsMade", i);
+            getDB().set("Players." + player + ".ShopsMade", i);
         }
         save();
     }
     
     public static int getShopsMade(String player) {
         player = player.toLowerCase();
-        return getDB().getInt(player + ".ShopsMade");
+        return getDB().getInt("Players." + player + ".ShopsMade");
     }
 }

@@ -17,7 +17,13 @@ public enum LocalOutput {
     CANNOT_TRADE_IN_THIS_WORLD(Local.getConfig().getString("CANNOT_TRADE_IN_THIS_WORLD")),
     CANNOT_TRADE_AT_THIS_MOMENT(Local.getConfig().getString("CANNOT_TRADE_AT_THIS_MOMENT")),
     CANNOT_ACCESS_THIS_COMMAND(Local.getConfig().getString("CANNOT_ACCESS_THIS_COMMAND")),
-    COOLDOWN_ACTIVE(Local.getConfig().getString("COOLDOWN_ACTIVE"));
+    COOLDOWN_ACTIVE(Local.getConfig().getString("COOLDOWN_ACTIVE")),
+    CANT_BUY_MORE_ADMINSHOP(Local.getConfig().getString("CANT_BUY_MORE_ADMINSHOP")),
+    CANT_SELL_MORE_ADMINSHOP(Local.getConfig().getString("CANT_SELL_MORE_ADMINSHOP")),
+    CANT_BUY_MORE_SHOP(Local.getConfig().getString("CANT_BUY_MORE_SHOP")),
+    CANT_SELL_MORE_SHOP(Local.getConfig().getString("CANT_SELL_MORE_SHOP")),
+    BUY_OVERFLOW_LIMIT(Local.getConfig().getString("BUY_OVERFLOW_LIMIT")),
+    SELL_OVERFLOW_LIMIT(Local.getConfig().getString("SELL_OVERFLOW_LIMIT"));
     
     private String output;
     

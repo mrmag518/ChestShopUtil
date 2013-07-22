@@ -3,11 +3,10 @@ package com.mrmag518.ChestShopUtil.Files;
 import com.mrmag518.ChestShopUtil.CSU;
 import com.mrmag518.ChestShopUtil.Util.ConfigManager;
 import com.mrmag518.ChestShopUtil.Util.Configuration;
+import com.mrmag518.ChestShopUtil.Util.Log;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 
@@ -23,11 +22,11 @@ public class Local {
             try {
                 f.createNewFile();
             } catch (IOException ex) {
-                Logger.getLogger(Config.class.getName()).log(Level.SEVERE, "Error creating local.yml", ex);
+                Log.severe("An error occured while creating the config.yml file!");
+                ex.printStackTrace();
             }
         }
         local = manager.getNewConfig("local.yml");
-
         
         local.addDefault("SHOP_PREFIX", "&a[Shop]", null);
         local.addDefault("LINE", "-----------------------------------------------------", null);
@@ -46,6 +45,12 @@ public class Local {
         local.addDefault("CANNOT_TRADE_AT_THIS_MOMENT", "%prefix% &fA disallowed trade period is currently active.", null);
         local.addDefault("CANNOT_ACCESS_THIS_COMMAND", "%prefix% &fYou don't have permissions to do that!", null);
         local.addDefault("COOLDOWN_ACTIVE", "%prefix% &fYou need to wait %cooldown%ms in order to create another shop.", null);
+        local.addDefault("CANT_BUY_MORE_ADMINSHOP", "%prefix% &fCan't buy more from admin shops today. (Limit: %limit%)", null);
+        local.addDefault("CANT_SELL_MORE_ADMINSHOP", "%prefix% &fCan't sell more to admin shops today. (Limit: %limit%)", null);
+        local.addDefault("CANT_BUY_MORE_SHOP", "%prefix% &fCan't buy more from shops today. (Limit: %limit%)", null);
+        local.addDefault("CANT_SELL_MORE_SHOP", "%prefix% &fCan't sell more to shops today. (Limit: %limit%)", null);
+        local.addDefault("BUY_OVERFLOW_LIMIT", "%prefix% &fQuantity would exceed the daily buy limit to an unacceptable extent.", null);
+        local.addDefault("SELL_OVERFLOW_LIMIT", "%prefix% &fQuantity would exceed the daily sell limit to an unacceptable extent.", null);
         
         save();
     }

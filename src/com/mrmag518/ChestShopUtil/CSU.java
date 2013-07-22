@@ -26,7 +26,9 @@ public class CSU extends JavaPlugin {
     
     @Override
     public void onDisable() {
-        Cooldown.clear();
+        try {
+            Cooldown.clear();
+        } catch(Exception e) {} // An exception is usually thrown when disabling, if the .jar file has been modified.
         Log.info("Version " + getVersion() + " disabled.");
     }
     

@@ -1,9 +1,10 @@
 author: mrmag518
 main: com.mrmag518.ChestShopUtil.CSU
-version: '1.0'
+version: '1.1'
 name: ChestShopUtil
-description: "Adds new utilities and features to ChestShop."
+description: "Adds new utilities, features and user limitations to ChestShop"
 softdepend: [ChestShop]
+website: http://dev.bukkit.org/bukkit-plugins/chestshoputil/
 commands:
   chestshoputil:
     description: Main command for ChestShopUtil
@@ -23,6 +24,10 @@ permissions:
       csu.getupdates: true
       csu.bypass.time-period: true
       csu.command.*: true
+      csu.daily.adminshop.maxbuy.*: true
+      csu.daily.adminshop.maxsell.*: true
+      csu.daily.shop.maxbuy.*: true
+      csu.daily.shop.maxsell.*: true
   csu.command.*:
     default: op
     children:
@@ -43,8 +48,6 @@ permissions:
     default: op
   csu.maxshops.*:
     default: op
-  csu.maxshops.-1:
-    default: op
   csu.bypass.item.*:
     default: op
   csu.getupdate:
@@ -61,3 +64,11 @@ permissions:
     default: true
   csu.command.main:
     default: true
+  csu.daily.adminshop.maxbuy.*:
+    default: op
+  csu.daily.adminshop.maxsell.*:
+    default: op
+  csu.daily.shop.maxbuy.*:
+    default: op
+  csu.daily.shop.maxsell.*:
+    default: op
