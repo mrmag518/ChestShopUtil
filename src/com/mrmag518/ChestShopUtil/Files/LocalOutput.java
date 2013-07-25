@@ -23,7 +23,16 @@ public enum LocalOutput {
     CANT_BUY_MORE_SHOP(Local.getConfig().getString("CANT_BUY_MORE_SHOP")),
     CANT_SELL_MORE_SHOP(Local.getConfig().getString("CANT_SELL_MORE_SHOP")),
     BUY_OVERFLOW_LIMIT(Local.getConfig().getString("BUY_OVERFLOW_LIMIT")),
-    SELL_OVERFLOW_LIMIT(Local.getConfig().getString("SELL_OVERFLOW_LIMIT"));
+    SELL_OVERFLOW_LIMIT(Local.getConfig().getString("SELL_OVERFLOW_LIMIT")),
+    SHOPEDIT_USAGE_L1(Local.getConfig().getString("SHOPEDIT_USAGE_L1")),
+    SHOPEDIT_USAGE_L2(Local.getConfig().getString("SHOPEDIT_USAGE_L2")),
+    SHOPEDIT_CANT_MODIFY_OTHERS(Local.getConfig().getString("SHOPEDIT_CANT_MODIFY_OTHERS")),
+    NOT_SIGN(Local.getConfig().getString("NOT_SIGN")),
+    INVALID_SIGN(Local.getConfig().getString("INVALID_SIGN")),
+    SHOPEDIT_OWNER_EDIT_SUCCESS(Local.getConfig().getString("SHOPEDIT_OWNER_EDIT_SUCCESS")),
+    INVALID_NUMBER(Local.getConfig().getString("INVALID_NUMBER")),
+    INVALID_AMOUNT(Local.getConfig().getString("INVALID_AMOUNT")),
+    SHOPEDIT_AMOUNT_EDIT_SUCCESS(Local.getConfig().getString("SHOPEDIT_AMOUNT_EDIT_SUCCESS"));
     
     private String output;
     

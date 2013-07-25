@@ -18,7 +18,7 @@ public class ShopDB {
     private static File databaseFile = null;
     
     // ----
-    public static int maxShopCap;
+    public static int maxShopPermValueCap;
     // ----
     
     public static void properLoad() {
@@ -100,7 +100,7 @@ public class ShopDB {
     }
     
     public static void cacheVariables() {
-        maxShopCap = getDB().getInt("Util.ShopPermSearchCap");
+        maxShopPermValueCap = getDB().getInt("Util.ShopPermSearchCap");
     }
     
     public static boolean use() {

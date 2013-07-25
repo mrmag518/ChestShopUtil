@@ -51,6 +51,15 @@ public class Local {
         local.addDefault("CANT_SELL_MORE_SHOP", "%prefix% &fCan't sell more to shops today. (Limit: %limit%)", null);
         local.addDefault("BUY_OVERFLOW_LIMIT", "%prefix% &fQuantity would exceed the daily buy limit to an unacceptable extent.", null);
         local.addDefault("SELL_OVERFLOW_LIMIT", "%prefix% &fQuantity would exceed the daily sell limit to an unacceptable extent.", null);
+        local.addDefault("SHOPEDIT_USAGE_L1", "%prefix% &fAllows you to modify a shop sign.", null);
+        local.addDefault("SHOPEDIT_USAGE_L2", "%prefix% &fCommand syntax: /shopedit <owner/amount/price/item> <text>", null);
+        local.addDefault("SHOPEDIT_CANT_MODIFY_OTHERS", "%prefix% &fYou may only edit your own shops!", null);
+        local.addDefault("NOT_SIGN", "%prefix% &fThat is not a sign!", null);
+        local.addDefault("INVALID_SIGN", "%prefix% &fThat is not a valid shop sign!", null);
+        local.addDefault("SHOPEDIT_OWNER_EDIT_SUCCESS", "%prefix% &fShop owner changed to '%owner%'!", null);
+        local.addDefault("INVALID_NUMBER", "%prefix% &f'%input%' is not a valid number!", null);
+        local.addDefault("INVALID_AMOUNT", "%prefix% &f'%amount%' is not valid!", null);
+        local.addDefault("SHOPEDIT_AMOUNT_EDIT_SUCCESS", "%prefix% &fShop amount changed to '%amount%'!", null);
         
         save();
     }

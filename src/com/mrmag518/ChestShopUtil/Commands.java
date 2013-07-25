@@ -1,5 +1,7 @@
 package com.mrmag518.ChestShopUtil;
 
+import com.Acrobot.Breeze.Utils.BlockUtil;
+import com.Acrobot.ChestShop.Signs.ChestShopSign;
 import com.mrmag518.ChestShopUtil.Files.Config;
 import com.mrmag518.ChestShopUtil.Files.Local;
 import com.mrmag518.ChestShopUtil.Files.LocalOutput;
@@ -7,6 +9,9 @@ import com.mrmag518.ChestShopUtil.Files.ShopDB;
 import com.mrmag518.ChestShopUtil.Util.UpdateThread;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -139,7 +144,117 @@ public class Commands implements CommandExecutor {
                 }
             }
             return true;
+        } else if(cmd.getName().equalsIgnoreCase("shopedit")) {
+            if(s instanceof Player) {
+                Player p = (Player)s;
+                
+                if(p.hasPermission("csu.command.shopedit.user")) {
+                    if(args.length == 0) {
+                        p.sendMessage(Local.s(LocalOutput.LINE));
+                        p.sendMessage(Local.s(LocalOutput.SHOPEDIT_USAGE_L1));
+                        p.sendMessage(Local.s(LocalOutput.SHOPEDIT_USAGE_L2));
+                        p.sendMessage(Local.s(LocalOutput.LINE));
+                    } else if(args.length >= 2) {
+                        String a0 = args[0];
+                        String input = getFinalArg(args, 2);
+                        
+                        if(a0.equalsIgnoreCase("owner") || a0.equalsIgnoreCase("name") || a0.equalsIgnoreCase("username") 
+                                || a0.equalsIgnoreCase("player") || a0.equalsIgnoreCase("user") || a0.equals("1")) {
+                            editSign(p, ChestShopSign.NAME_LINE, input);
+                        }
+                    }
+                } else {
+                    s.sendMessage(Local.s(LocalOutput.CANNOT_ACCESS_THIS_COMMAND));
+                }
+            } else {
+                s.sendMessage("Player command only.");
+            }
         }
         return false;
+    }
+    
+    private static void editSign(Player p, byte line, String input) {
+        Block b = p.getTargetBlock(null, 5);
+        
+        if(b != null) {
+            if(BlockUtil.isSign(b)) {
+                Sign sign = (Sign)b.getState();
+                
+                if(ChestShopSign.isValid(sign)) {
+                    if(line == ChestShopSign.NAME_LINE) {
+                        if(!isOwn(p.getName(), sign)) {
+                            if(!p.hasPermission("csu.command.shopedit.admin")) {
+                                p.sendMessage(Local.s(LocalOutput.SHOPEDIT_CANT_MODIFY_OTHERS));
+                                return;
+                            }
+                        }
+                        sign.setLine(line, input);
+                        sign.update();
+                        p.sendMessage(Local.s(LocalOutput.SHOPEDIT_OWNER_EDIT_SUCCESS).replace("%owner%", input));
+                    } else if(line == ChestShopSign.QUANTITY_LINE) {
+                        if(!isOwn(p.getName(), sign)) {
+                            if(!p.hasPermission("csu.command.shopedit.admin")) {
+                                p.sendMessage(Local.s(LocalOutput.SHOPEDIT_CANT_MODIFY_OTHERS));
+                                return;
+                            }
+                        }
+                        int newAmount;
+                        
+                        try {
+                            newAmount = Integer.parseInt(input);
+                        } catch(NumberFormatException e) {
+                            p.sendMessage(Local.s(LocalOutput.INVALID_NUMBER).replace("%input%", input));
+                            return;
+                        }
+                        
+                        if(newAmount < 1) {
+                            p.sendMessage(Local.s(LocalOutput.INVALID_AMOUNT));
+                            return;
+                        }
+                        sign.setLine(line, input);
+                        sign.update();
+                        p.sendMessage(Local.s(LocalOutput.SHOPEDIT_AMOUNT_EDIT_SUCCESS).replace("%amount%", input));
+                    } else if(line == ChestShopSign.PRICE_LINE) {
+                        if(!isOwn(p.getName(), sign)) {
+                            if(!p.hasPermission("csu.command.shopedit.admin")) {
+                                p.sendMessage(Local.s(LocalOutput.SHOPEDIT_CANT_MODIFY_OTHERS));
+                                return;
+                            }
+                        }
+                        
+                        // todo
+                    } else if(line == ChestShopSign.ITEM_LINE) {
+                        if(!isOwn(p.getName(), sign)) {
+                            if(!p.hasPermission("csu.command.shopedit.admin")) {
+                                p.sendMessage(Local.s(LocalOutput.SHOPEDIT_CANT_MODIFY_OTHERS));
+                                return;
+                            }
+                        }
+                        
+                        // todo
+                    }
+                } else {
+                    p.sendMessage(Local.s(LocalOutput.INVALID_SIGN));
+                }
+            } else {
+                p.sendMessage(Local.s(LocalOutput.NOT_SIGN));
+            }
+        } else {
+            p.sendMessage(Local.s(LocalOutput.NOT_SIGN));
+        }
+    }
+    
+    // Credits to Essentials for this method.
+    private static String getFinalArg(final String[] args, final int start) {
+        final StringBuilder bldr = new StringBuilder();
+        for (int i = start; i < args.length; i++) {
+            if (i != start) bldr.append(" ");
+            bldr.append(args[i]);
+        }
+        return bldr.toString();
+    }
+    
+    private static boolean isOwn(String player, Sign sign) {
+        return sign.getLine(ChestShopSign.NAME_LINE).equalsIgnoreCase(player);
     }
 }

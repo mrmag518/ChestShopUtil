@@ -66,15 +66,15 @@ public class EventListener implements Listener {
                 return;
             }
             
-            for(int i = 0; i < ShopDB.maxShopCap; i++) {
+            for(int i = 0; i < ShopDB.maxShopPermValueCap; i++) {
                  if(p.hasPermission("csu.maxshops." + i)) {
                      canCreate = i;
                      break;
                  }
             }
             
-            if(canCreate > ShopDB.maxShopCap) {
-                canCreate = ShopDB.maxShopCap;
+            if(canCreate > ShopDB.maxShopPermValueCap) {
+                canCreate = ShopDB.maxShopPermValueCap;
             } else if(canCreate < 0) {
                 if(ShopDB.getShopsMade(p.getName()) >= Config.maxShops) {
                     event.setOutcome(PreShopCreationEvent.CreationOutcome.OTHER);

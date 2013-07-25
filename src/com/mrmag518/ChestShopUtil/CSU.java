@@ -11,8 +11,8 @@ import com.mrmag518.ChestShopUtil.Util.Updater;
 import java.io.IOException;
 
 import javax.annotation.Nullable;
-import org.bukkit.Bukkit;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
@@ -26,6 +26,11 @@ public class CSU extends JavaPlugin {
     public String verionFound = "";
     private Plugin chestshop = null;
     public BukkitTask timeChecker = null;
+    
+    /**
+     * Self reminder:
+     * - Add economy support for shopedit command.
+     */
     
     @Override
     public void onDisable() {

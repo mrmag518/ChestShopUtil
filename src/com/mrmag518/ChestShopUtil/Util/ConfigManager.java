@@ -232,18 +232,13 @@ public class ConfigManager {
                     } else if (lastLine == 1) {
                         config.append("\n").append(normalComment).append("\n"); // Modified
                     }
-
                     lastLine = 0;
-
                 }
-
             } else {
                 config.append(line).append("\n"); // Modified
                 lastLine = 1;
             }
-
         }
-
         return config.toString();
     }
 

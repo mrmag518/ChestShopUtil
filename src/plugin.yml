@@ -36,6 +36,8 @@ permissions:
       csu.command.reload: true
       csu.command.help: true
       csu.command.main: true
+      csu.command.shopedit.user: true
+      csu.command.shopedit.admin: true
   csu.bypass.global-maxbuy:
     default: op
   csu.bypass.global-maxsell:
@@ -72,3 +74,9 @@ permissions:
     default: op
   csu.daily.shop.maxsell.*:
     default: op
+  csu.command.shopedit.user:
+    default: op
+  csu.command.shopedit.admin:
+    default: op
+    children:
+      csu.command.shopedit.user: true
