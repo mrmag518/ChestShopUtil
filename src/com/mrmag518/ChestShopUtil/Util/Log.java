@@ -1,4 +1,3 @@
-
 package com.mrmag518.ChestShopUtil.Util;
 
 import java.util.logging.Level;

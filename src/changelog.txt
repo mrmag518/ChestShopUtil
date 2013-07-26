@@ -5,8 +5,8 @@ Version 1.1
 * Added shop sign modification through a command.
 ** Works just as if you were creating a new shop by placing the sign.
 ** Economy support.
-** Define your own custom fee permissions.
-* 
+** Define your own custom fee permissions which will override the configured fee.
+* Small code improvements.
 
 Version 1.0
 * Release

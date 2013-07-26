@@ -1,9 +1,5 @@
 package com.mrmag518.ChestShopUtil.Util;
 
-/**
- * Time utility class by mrmag518.
- */
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

@@ -2,11 +2,8 @@ package com.mrmag518.ChestShopUtil;
 
 import com.Acrobot.Breeze.Utils.BlockUtil;
 import com.Acrobot.Breeze.Utils.MaterialUtil;
-import com.Acrobot.Breeze.Utils.PriceUtil;
 import com.Acrobot.ChestShop.ChestShop;
-import com.Acrobot.ChestShop.Configuration.Messages;
 import com.Acrobot.ChestShop.Events.PreShopCreationEvent;
-import com.Acrobot.ChestShop.Events.PreShopCreationEvent.CreationOutcome;
 import com.Acrobot.ChestShop.Signs.ChestShopSign;
 import com.mrmag518.ChestShopUtil.Files.Config;
 import com.mrmag518.ChestShopUtil.Files.Local;
@@ -17,15 +14,12 @@ import com.mrmag518.ChestShopUtil.Util.Log;
 import com.mrmag518.ChestShopUtil.Util.UpdateThread;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class Commands implements CommandExecutor {

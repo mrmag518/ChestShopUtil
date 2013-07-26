@@ -30,7 +30,7 @@ public class CSU extends JavaPlugin {
     
     /**
      * Self reminder:
-     * - Add economy support for shopedit command.
+     * - Make daily events such as the max buy & sell feature reset at midnight.
      * - World variable support for most lists.
      * - Max sell and buy per day for specific items.
      */
