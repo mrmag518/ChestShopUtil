@@ -30,9 +30,16 @@ public enum LocalOutput {
     NOT_SIGN(Local.getConfig().getString("NOT_SIGN")),
     INVALID_SIGN(Local.getConfig().getString("INVALID_SIGN")),
     SHOPEDIT_OWNER_EDIT_SUCCESS(Local.getConfig().getString("SHOPEDIT_OWNER_EDIT_SUCCESS")),
-    INVALID_NUMBER(Local.getConfig().getString("INVALID_NUMBER")),
     INVALID_AMOUNT(Local.getConfig().getString("INVALID_AMOUNT")),
-    SHOPEDIT_AMOUNT_EDIT_SUCCESS(Local.getConfig().getString("SHOPEDIT_AMOUNT_EDIT_SUCCESS"));
+    SHOPEDIT_AMOUNT_EDIT_SUCCESS(Local.getConfig().getString("SHOPEDIT_AMOUNT_EDIT_SUCCESS")),
+    SHOPEDIT_PRICE_EDIT_SUCCESS(Local.getConfig().getString("SHOPEDIT_PRICE_EDIT_SUCCESS")),
+    SHOPEDIT_CANT_MODIFY_OWNER(Local.getConfig().getString("SHOPEDIT_CANT_MODIFY_OWNER")),
+    SHOPEDIT_ITEM_EDIT_SUCCESS(Local.getConfig().getString("SHOPEDIT_ITEM_EDIT_SUCCESS")),
+    SHOPEDIT_INVALID_ARG(Local.getConfig().getString("SHOPEDIT_INVALID_ARG")),
+    INVALID_NAME(Local.getConfig().getString("INVALID_NAME")),
+    INVALID_PRICE(Local.getConfig().getString("INVALID_PRICE")),
+    INVALID_ITEM(Local.getConfig().getString("INVALID_ITEM")),
+    TOO_POOR(Local.getConfig().getString("TOO_POOR"));
     
     private String output;
     

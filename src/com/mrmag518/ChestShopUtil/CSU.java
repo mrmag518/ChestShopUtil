@@ -4,6 +4,7 @@ import com.mrmag518.ChestShopUtil.Files.Local;
 import com.mrmag518.ChestShopUtil.Files.Config;
 import com.mrmag518.ChestShopUtil.Files.ShopDB;
 import com.mrmag518.ChestShopUtil.Util.Cooldown;
+import com.mrmag518.ChestShopUtil.Util.EcoHandler;
 import com.mrmag518.ChestShopUtil.Util.Log;
 import com.mrmag518.ChestShopUtil.Util.UpdateThread;
 import com.mrmag518.ChestShopUtil.Util.Updater;
@@ -30,14 +31,14 @@ public class CSU extends JavaPlugin {
     /**
      * Self reminder:
      * - Add economy support for shopedit command.
+     * - World variable support for most lists.
+     * - Max sell and buy per day for specific items.
      */
     
     @Override
     public void onDisable() {
         timeChecker = null;
-        try {
-            Cooldown.clear();
-        } catch(Exception e) {} // An exception is usually thrown when disabling, if the .jar file has been modified.
+        Cooldown.clear();
         Log.info("Version " + getVersion() + " disabled.");
     }
     
@@ -46,7 +47,7 @@ public class CSU extends JavaPlugin {
         if(!getDataFolder().exists()) {
             getDataFolder().mkdir();
         }
-        verifyChestShop();
+        checkPlugins();
         Config.load();
         Local.load();
         ShopDB.properLoad();
@@ -71,6 +72,7 @@ public class CSU extends JavaPlugin {
         }
         
         getCommand("chestshoputil").setExecutor(new Commands(this));
+        getCommand("shopedit").setExecutor(new Commands(this));
         Log.info("Version " + getVersion() + " enabled.");
     }
     
@@ -131,9 +133,10 @@ public class CSU extends JavaPlugin {
         }
     }
     
-    private void verifyChestShop() {
+    private void checkPlugins() {
         PluginManager pm = getServer().getPluginManager();
         chestshop = pm.getPlugin("ChestShop");
+        Plugin vault = pm.getPlugin("Vault");
         
         if(chestshop != null && pm.isPluginEnabled(chestshop)) {
             String version = chestshop.getDescription().getVersion().replace("v", "");
@@ -142,6 +145,16 @@ public class CSU extends JavaPlugin {
         } else {
             Log.severe("ChestShop was not found!");
             Log.severe("Please make sure ChestShop is installed, and is being enabled without errors!");
+            Log.severe("Disabling ..");
+            pm.disablePlugin(this);
+        }
+        
+        if(vault != null && pm.isPluginEnabled(vault)) {
+            EcoHandler.setupEconomy();
+            Log.info("Hooked to " + EcoHandler.getEconomy().getName() + "!");
+        } else {
+            Log.severe("Vault was not found!");
+            Log.severe("Please make sure Vault is installed, and is being enabled without errors!");
             Log.severe("Disabling ..");
             pm.disablePlugin(this);
         }

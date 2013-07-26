@@ -52,14 +52,21 @@ public class Local {
         local.addDefault("BUY_OVERFLOW_LIMIT", "%prefix% &fQuantity would exceed the daily buy limit to an unacceptable extent.", null);
         local.addDefault("SELL_OVERFLOW_LIMIT", "%prefix% &fQuantity would exceed the daily sell limit to an unacceptable extent.", null);
         local.addDefault("SHOPEDIT_USAGE_L1", "%prefix% &fAllows you to modify a shop sign.", null);
-        local.addDefault("SHOPEDIT_USAGE_L2", "%prefix% &fCommand syntax: /shopedit <owner/amount/price/item> <text>", null);
+        local.addDefault("SHOPEDIT_USAGE_L2", "%prefix% &fCommand syntax: /shopedit <owner|amount|price|item> <text/number>", null);
         local.addDefault("SHOPEDIT_CANT_MODIFY_OTHERS", "%prefix% &fYou may only edit your own shops!", null);
         local.addDefault("NOT_SIGN", "%prefix% &fThat is not a sign!", null);
-        local.addDefault("INVALID_SIGN", "%prefix% &fThat is not a valid shop sign!", null);
+        local.addDefault("INVALID_SIGN", "%prefix% &fThat is not a valid chestshop sign!", null);
         local.addDefault("SHOPEDIT_OWNER_EDIT_SUCCESS", "%prefix% &fShop owner changed to '%owner%'!", null);
-        local.addDefault("INVALID_NUMBER", "%prefix% &f'%input%' is not a valid number!", null);
-        local.addDefault("INVALID_AMOUNT", "%prefix% &f'%amount%' is not valid!", null);
+        local.addDefault("INVALID_AMOUNT", "%prefix% &f'%amount%' is not a valid amount!", null);
         local.addDefault("SHOPEDIT_AMOUNT_EDIT_SUCCESS", "%prefix% &fShop amount changed to '%amount%'!", null);
+        local.addDefault("SHOPEDIT_PRICE_EDIT_SUCCESS", "%prefix% &fShop price changed to '%price%'!", null);
+        local.addDefault("SHOPEDIT_CANT_MODIFY_OWNER", "%prefix% &fYou are not allowed to edit the shop owner.", null);
+        local.addDefault("SHOPEDIT_ITEM_EDIT_SUCCESS", "%prefix% &fShop item changed to '%item%'!", null);
+        local.addDefault("SHOPEDIT_INVALID_ARG", "%prefix% &fInvalid usage! Run '/shopedit' for the correct usage.", null);
+        local.addDefault("INVALID_NAME", "%prefix% &f%name% is not a valid username!", null);
+        local.addDefault("INVALID_PRICE", "%prefix% &f%price% is not a valid price!", null);
+        local.addDefault("INVALID_ITEM", "%prefix% &f%item% is not a valid item!", null);
+        local.addDefault("TOO_POOR", "%prefix% &fYou need at least $%money% for that!", null);
         
         save();
     }

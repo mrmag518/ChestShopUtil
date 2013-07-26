@@ -3,13 +3,17 @@ main: com.mrmag518.ChestShopUtil.CSU
 version: '1.1'
 name: ChestShopUtil
 description: "Adds new utilities, features and user limitations to ChestShop"
-softdepend: [ChestShop]
+softdepend: [ChestShop, Vault]
 website: http://dev.bukkit.org/bukkit-plugins/chestshoputil/
 commands:
   chestshoputil:
     description: Main command for ChestShopUtil
     usage: /<command> [args]
     aliases: [csu, chestshoputilities, csutil]
+  shopedit:
+    description: Allows you to modify ChestShop signs
+    usage: /<command> <owner|amount|price|item> <text>
+    aliases: [editshop, modifyshop, csedit]
 permissions:
   csu.admin:
     default: op

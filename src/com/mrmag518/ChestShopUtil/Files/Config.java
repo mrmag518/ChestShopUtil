@@ -35,6 +35,10 @@ public class Config {
     public static int maxDailyShopSell;
     public static int maxBuyOverflow;
     public static int maxSellOverflow;
+    public static double shopeditOwnerFee;
+    public static double shopeditAmountFee;
+    public static double shopeditPriceFee;
+    public static double shopeditItemFee;
     // ----
     
     public static void load() {
@@ -125,6 +129,12 @@ public class Config {
         config.addDefault("Daily.Max.Sell.PlayerShop", 0, null);
         config.addDefault("Daily.Max.Sell.OverflowLimit", 50, null);
         
+        config.addDefault("ShopEdit.Edit-Fee.Owner", 0, "The price to withdraw from the user's balance when"
+                + ";editing a chestshop.");
+        config.addDefault("ShopEdit.Edit-Fee.Amount", 0, null);
+        config.addDefault("ShopEdit.Edit-Fee.Price", 0, null);
+        config.addDefault("ShopEdit.Edit-Fee.Item", 0, null);
+        
         /*config.addDefault("Item-Currency.Enabled", false, 
                   "Enable, Enables the item currency feature."
                 + ";Item-Currency will use items instead of virtual money."
@@ -164,6 +174,10 @@ public class Config {
         maxDailyShopSell = Config.getConfig().getInt("Daily.Max.Sell.PlayerShop");
         maxBuyOverflow = Config.getConfig().getInt("Daily.Max.Buy.OverflowLimit");
         maxSellOverflow = Config.getConfig().getInt("Daily.Max.Sell.OverflowLimit");
+        shopeditOwnerFee = Config.getConfig().getDouble("ShopEdit.Edit-Fee.Owner");
+        shopeditAmountFee = Config.getConfig().getDouble("ShopEdit.Edit-Fee.Amount");
+        shopeditPriceFee = Config.getConfig().getDouble("ShopEdit.Edit-Fee.Price");
+        shopeditItemFee = Config.getConfig().getDouble("ShopEdit.Edit-Fee.Item");
     }
     
     private static Configuration getConfig() {

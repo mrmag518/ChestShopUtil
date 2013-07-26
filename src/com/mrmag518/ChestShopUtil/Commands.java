@@ -1,11 +1,19 @@
 package com.mrmag518.ChestShopUtil;
 
 import com.Acrobot.Breeze.Utils.BlockUtil;
+import com.Acrobot.Breeze.Utils.MaterialUtil;
+import com.Acrobot.Breeze.Utils.PriceUtil;
+import com.Acrobot.ChestShop.ChestShop;
+import com.Acrobot.ChestShop.Configuration.Messages;
+import com.Acrobot.ChestShop.Events.PreShopCreationEvent;
+import com.Acrobot.ChestShop.Events.PreShopCreationEvent.CreationOutcome;
 import com.Acrobot.ChestShop.Signs.ChestShopSign;
 import com.mrmag518.ChestShopUtil.Files.Config;
 import com.mrmag518.ChestShopUtil.Files.Local;
 import com.mrmag518.ChestShopUtil.Files.LocalOutput;
 import com.mrmag518.ChestShopUtil.Files.ShopDB;
+import com.mrmag518.ChestShopUtil.Util.EcoHandler;
+import com.mrmag518.ChestShopUtil.Util.Log;
 import com.mrmag518.ChestShopUtil.Util.UpdateThread;
 
 import org.bukkit.ChatColor;
@@ -16,6 +24,9 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.inventory.ItemStack;
 
 public class Commands implements CommandExecutor {
     public CSU plugin;
@@ -155,13 +166,22 @@ public class Commands implements CommandExecutor {
                         p.sendMessage(Local.s(LocalOutput.SHOPEDIT_USAGE_L2));
                         p.sendMessage(Local.s(LocalOutput.LINE));
                     } else if(args.length >= 2) {
-                        String a0 = args[0];
-                        String input = getFinalArg(args, 2);
+                        String a0 = args[0].toLowerCase();
+                        String input = getFinalArg(args, 1);
                         
-                        if(a0.equalsIgnoreCase("owner") || a0.equalsIgnoreCase("name") || a0.equalsIgnoreCase("username") 
-                                || a0.equalsIgnoreCase("player") || a0.equalsIgnoreCase("user") || a0.equals("1")) {
+                        if(a0.equals("owner") || a0.equals("name") || a0.equals("username") || a0.equals("player") || a0.equals("user") || a0.equals("line1") || a0.equals("1")) {
                             editSign(p, ChestShopSign.NAME_LINE, input);
+                        } else if(a0.equals("amount") || a0.equals("quantity") || a0.equals("line3") || a0.equals("2")) {
+                            editSign(p, ChestShopSign.QUANTITY_LINE, input);
+                        } else if(a0.equals("price") || a0.equals("value") || a0.equals("money") || a0.equals("line3") || a0.equals("3")) {
+                            editSign(p, ChestShopSign.PRICE_LINE, input);
+                        } else if(a0.equals("item") || a0.equals("material") || a0.equals("line4") || a0.equals("4")) {
+                            editSign(p, ChestShopSign.ITEM_LINE, input);
+                        } else {
+                            p.sendMessage(Local.s(LocalOutput.SHOPEDIT_INVALID_ARG));
                         }
+                    } else {
+                        p.sendMessage(Local.s(LocalOutput.SHOPEDIT_INVALID_ARG));
                     }
                 } else {
                     s.sendMessage(Local.s(LocalOutput.CANNOT_ACCESS_THIS_COMMAND));
@@ -169,11 +189,12 @@ public class Commands implements CommandExecutor {
             } else {
                 s.sendMessage("Player command only.");
             }
+            return true;
         }
         return false;
     }
     
-    private static void editSign(Player p, byte line, String input) {
+    private void editSign(Player p, byte line, String input) {
         Block b = p.getTargetBlock(null, 5);
         
         if(b != null) {
@@ -182,15 +203,30 @@ public class Commands implements CommandExecutor {
                 
                 if(ChestShopSign.isValid(sign)) {
                     if(line == ChestShopSign.NAME_LINE) {
-                        if(!isOwn(p.getName(), sign)) {
-                            if(!p.hasPermission("csu.command.shopedit.admin")) {
-                                p.sendMessage(Local.s(LocalOutput.SHOPEDIT_CANT_MODIFY_OTHERS));
-                                return;
-                            }
+                        if(!p.hasPermission("csu.command.shopedit.admin")) {
+                            p.sendMessage(Local.s(LocalOutput.SHOPEDIT_CANT_MODIFY_OWNER));
+                            return;
                         }
-                        sign.setLine(line, input);
-                        sign.update();
-                        p.sendMessage(Local.s(LocalOutput.SHOPEDIT_OWNER_EDIT_SUCCESS).replace("%owner%", input));
+                        
+                        if(!EcoHandler.hasAtleast(p.getName(), Config.shopeditOwnerFee)) {
+                            p.sendMessage(Local.s(LocalOutput.TOO_POOR).replace("%money%", String.valueOf(Config.shopeditOwnerFee)));
+                            return;
+                        }
+                        String[] lines = {input, sign.getLine(1), sign.getLine(2), sign.getLine(3)};
+                        
+                        if(ChestShopSign.isValidPreparedSign(lines)) {
+                            PreShopCreationEvent event = new PreShopCreationEvent(p, sign, lines);
+                            ChestShop.callEvent(event);
+                            
+                            if(!event.isCancelled()) {
+                                EcoHandler.take(p.getName(), Config.shopeditOwnerFee);
+                                sign.setLine(line, event.getSignLine(line));
+                                sign.update();
+                                p.sendMessage(Local.s(LocalOutput.SHOPEDIT_OWNER_EDIT_SUCCESS).replace("%owner%", input));
+                            }
+                        } else {
+                            p.sendMessage(Local.s(LocalOutput.INVALID_NAME).replace("%name%", input));
+                        }
                     } else if(line == ChestShopSign.QUANTITY_LINE) {
                         if(!isOwn(p.getName(), sign)) {
                             if(!p.hasPermission("csu.command.shopedit.admin")) {
@@ -198,22 +234,26 @@ public class Commands implements CommandExecutor {
                                 return;
                             }
                         }
-                        int newAmount;
                         
-                        try {
-                            newAmount = Integer.parseInt(input);
-                        } catch(NumberFormatException e) {
-                            p.sendMessage(Local.s(LocalOutput.INVALID_NUMBER).replace("%input%", input));
+                        if(!EcoHandler.hasAtleast(p.getName(), Config.shopeditAmountFee)) {
+                            p.sendMessage(Local.s(LocalOutput.TOO_POOR).replace("%money%", String.valueOf(Config.shopeditAmountFee)));
                             return;
                         }
+                        String[] lines = {sign.getLine(0), input, sign.getLine(2), sign.getLine(3)};
                         
-                        if(newAmount < 1) {
-                            p.sendMessage(Local.s(LocalOutput.INVALID_AMOUNT));
-                            return;
+                        if(ChestShopSign.isValidPreparedSign(lines)) {
+                            PreShopCreationEvent event = new PreShopCreationEvent(p, sign, lines);
+                            ChestShop.callEvent(event);
+                            
+                            if(!event.isCancelled()) {
+                                EcoHandler.take(p.getName(), Config.shopeditAmountFee);
+                                sign.setLine(line, event.getSignLine(line));
+                                sign.update();
+                                p.sendMessage(Local.s(LocalOutput.SHOPEDIT_AMOUNT_EDIT_SUCCESS).replace("%amount%", input));
+                            }
+                        } else {
+                            p.sendMessage(Local.s(LocalOutput.INVALID_AMOUNT).replace("%amount%", input));
                         }
-                        sign.setLine(line, input);
-                        sign.update();
-                        p.sendMessage(Local.s(LocalOutput.SHOPEDIT_AMOUNT_EDIT_SUCCESS).replace("%amount%", input));
                     } else if(line == ChestShopSign.PRICE_LINE) {
                         if(!isOwn(p.getName(), sign)) {
                             if(!p.hasPermission("csu.command.shopedit.admin")) {
@@ -222,7 +262,25 @@ public class Commands implements CommandExecutor {
                             }
                         }
                         
-                        // todo
+                        if(!EcoHandler.hasAtleast(p.getName(), Config.shopeditPriceFee)) {
+                            p.sendMessage(Local.s(LocalOutput.TOO_POOR).replace("%money%", String.valueOf(Config.shopeditPriceFee)));
+                            return;
+                        }
+                        String[] lines = {sign.getLine(0), sign.getLine(1), input, sign.getLine(3)};
+                        
+                        if(ChestShopSign.isValidPreparedSign(lines)) {
+                            PreShopCreationEvent event = new PreShopCreationEvent(p, sign, lines);
+                            ChestShop.callEvent(event);
+                            
+                            if(!event.isCancelled()) {
+                                EcoHandler.take(p.getName(), Config.shopeditPriceFee);
+                                sign.setLine(line, event.getSignLine(line));
+                                sign.update();
+                                p.sendMessage(Local.s(LocalOutput.SHOPEDIT_PRICE_EDIT_SUCCESS).replace("%price%", input));
+                            }
+                        } else {
+                            p.sendMessage(Local.s(LocalOutput.INVALID_PRICE).replace("%price%", input));
+                        }
                     } else if(line == ChestShopSign.ITEM_LINE) {
                         if(!isOwn(p.getName(), sign)) {
                             if(!p.hasPermission("csu.command.shopedit.admin")) {
@@ -231,7 +289,27 @@ public class Commands implements CommandExecutor {
                             }
                         }
                         
-                        // todo
+                        if(!EcoHandler.hasAtleast(p.getName(), Config.shopeditItemFee)) {
+                            p.sendMessage(Local.s(LocalOutput.TOO_POOR).replace("%money%", String.valueOf(Config.shopeditItemFee)));
+                            return;
+                        }
+                        String[] lines = {sign.getLine(0), sign.getLine(1), sign.getLine(2), input};
+                        
+                        if(ChestShopSign.isValidPreparedSign(lines)) {
+                            ItemStack is = MaterialUtil.getItem(input);
+                            String signName = MaterialUtil.getSignName(is);
+                            PreShopCreationEvent event = new PreShopCreationEvent(p, sign, lines);
+                            ChestShop.callEvent(event);
+                            
+                            if(!event.isCancelled()) {
+                                EcoHandler.take(p.getName(), Config.shopeditItemFee);
+                                sign.setLine(line, event.getSignLine(line));
+                                sign.update();
+                                p.sendMessage(Local.s(LocalOutput.SHOPEDIT_ITEM_EDIT_SUCCESS).replace("%item%", signName));
+                            }
+                        } else {
+                            p.sendMessage(Local.s(LocalOutput.INVALID_ITEM).replace("%item%", input));
+                        }
                     }
                 } else {
                     p.sendMessage(Local.s(LocalOutput.INVALID_SIGN));
@@ -245,7 +323,7 @@ public class Commands implements CommandExecutor {
     }
     
     // Credits to Essentials for this method.
-    private static String getFinalArg(final String[] args, final int start) {
+    private String getFinalArg(final String[] args, final int start) {
         final StringBuilder bldr = new StringBuilder();
         for (int i = start; i < args.length; i++) {
             if (i != start) bldr.append(" ");
@@ -254,7 +332,7 @@ public class Commands implements CommandExecutor {
         return bldr.toString();
     }
     
-    private static boolean isOwn(String player, Sign sign) {
+    private boolean isOwn(String player, Sign sign) {
         return sign.getLine(ChestShopSign.NAME_LINE).equalsIgnoreCase(player);
     }
 }
