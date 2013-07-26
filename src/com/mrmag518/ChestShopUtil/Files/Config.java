@@ -39,6 +39,10 @@ public class Config {
     public static double shopeditAmountFee;
     public static double shopeditPriceFee;
     public static double shopeditItemFee;
+    public static List<String> shopeditFeePerms_L1;
+    public static List<String> shopeditFeePerms_L2;
+    public static List<String> shopeditFeePerms_L3;
+    public static List<String> shopeditFeePerms_L4;
     // ----
     
     public static void load() {
@@ -60,11 +64,15 @@ public class Config {
         String[] default_sell_prices = {"0;0", "0:20;200"};
         String[] default_items = {"0", "1337:20"};
         String[] default_times = {"0-0"};
+        String[] shopedit_perms1 = {"my.custom.permission;0"}; // YAML refuses to cooperate unless I separate the lists for some reason..
+        String[] shopedit_perms2 = {"my.custom.permission;0"};
+        String[] shopedit_perms3 = {"my.custom.permission;0"};
+        String[] shopedit_perms4 = {"my.custom.permission;0", "fee.is.after.semicolon;10"};
         
         config.addDefault("UpdateChecker.Enabled", true, "Checks for an available update when CSU is being enabled."
                 + ";This will not download anything, only notify you if"
                 + ";there is an update available."
-                + ";"
+                + ";-"
                 + ";Use-Multi-Threading - Will run the update check on a"
                 + ";separate thread.");
         config.addDefault("UpdateChecker.Use-Multi-Threading", true, null);
@@ -89,7 +97,7 @@ public class Config {
         
         config.addDefault("Max-Sell-Prices", default_sell_prices, "Prevents players from creating shops with a sell"
                 + ";price above the max for a specific item."
-                + ";The last number after the separation symbol is the price."
+                + ";The last number after the semicolon is the price."
                 + ";A price value of 0 wil be ignored.");
         
         config.addDefault("Max-Shops-Per-Player", 0, "Setting this to a value above 0 will enable the feature."
@@ -113,15 +121,15 @@ public class Config {
                 + ";from the specific shop type, per day."
                 + ";This will create a shops.yml file if one does exist."
                 + ";Which will be used as a database."
-                + ";"
+                + ";-"
                 + ";OverflowLimit - When a player trades with a shop without"
                 + ";having exceeded the limit, but the amount he is about"
                 + ";to buy/sell will make him exceed the limit."
                 + ";Example, ADude has bought 99/100 items, but the amount"
                 + ";he is about to buy is 5, he would exceed the limit with"
-                + ";104/100 items. Setting the OverflowLimit to 50 would allow"
-                + ";ADude to buy with a overflow of 50, which would mark him"
-                + ";having bought a total of 149/100 items.");
+                + ";104/100 items. Setting the OverflowLimit to 5 would allow"
+                + ";ADude to buy with this overflow, which would mark him"
+                + ";having bought a total of 104/100 items.");
         config.addDefault("Daily.Max.Buy.PlayerShop", 0, null);
         config.addDefault("Daily.Max.Buy.OverflowLimit", 50, null);
         
@@ -129,11 +137,18 @@ public class Config {
         config.addDefault("Daily.Max.Sell.PlayerShop", 0, null);
         config.addDefault("Daily.Max.Sell.OverflowLimit", 50, null);
         
-        config.addDefault("ShopEdit.Edit-Fee.Owner", 0, "The price to withdraw from the user's balance when"
-                + ";editing a chestshop.");
-        config.addDefault("ShopEdit.Edit-Fee.Amount", 0, null);
-        config.addDefault("ShopEdit.Edit-Fee.Price", 0, null);
-        config.addDefault("ShopEdit.Edit-Fee.Item", 0, null);
+        config.addDefault("ShopEdit.Name-Line.Fee", 0, "The amount of money to remove from the user when"
+                + ";editing a chestshop."
+                + ";-"
+                + ";Fee-Perms - Define your own custom fee permissions."
+                + ";CSU will check users for all defined permissions here.");
+        config.addDefault("ShopEdit.Name-Line.Fee-Perms", shopedit_perms1, null);
+        config.addDefault("ShopEdit.Quantity-Line.Fee", 0, null);
+        config.addDefault("ShopEdit.Quantity-Line.Fee-Perms", shopedit_perms2, null);
+        config.addDefault("ShopEdit.Price-Line.Fee", 0, null);
+        config.addDefault("ShopEdit.Price-Line.Fee-Perms", shopedit_perms3, null);
+        config.addDefault("ShopEdit.Item-Line.Fee", 0, null);
+        config.addDefault("ShopEdit.Item-Line.Fee-Perms", shopedit_perms4, null);
         
         /*config.addDefault("Item-Currency.Enabled", false, 
                   "Enable, Enables the item currency feature."
@@ -174,10 +189,14 @@ public class Config {
         maxDailyShopSell = Config.getConfig().getInt("Daily.Max.Sell.PlayerShop");
         maxBuyOverflow = Config.getConfig().getInt("Daily.Max.Buy.OverflowLimit");
         maxSellOverflow = Config.getConfig().getInt("Daily.Max.Sell.OverflowLimit");
-        shopeditOwnerFee = Config.getConfig().getDouble("ShopEdit.Edit-Fee.Owner");
-        shopeditAmountFee = Config.getConfig().getDouble("ShopEdit.Edit-Fee.Amount");
-        shopeditPriceFee = Config.getConfig().getDouble("ShopEdit.Edit-Fee.Price");
-        shopeditItemFee = Config.getConfig().getDouble("ShopEdit.Edit-Fee.Item");
+        shopeditOwnerFee = Config.getConfig().getDouble("ShopEdit.Name-Line.Fee");
+        shopeditAmountFee = Config.getConfig().getDouble("ShopEdit.Quantity-Line.Fee");
+        shopeditPriceFee = Config.getConfig().getDouble("ShopEdit.Price-Line.Fee");
+        shopeditItemFee = Config.getConfig().getDouble("ShopEdit.Item-Line.Fee");
+        shopeditFeePerms_L1 = Config.getConfig().getStringList("ShopEdit.Name-Line.Fee-Perms");
+        shopeditFeePerms_L2 = Config.getConfig().getStringList("ShopEdit.Quantity-Line.Fee-Perms");
+        shopeditFeePerms_L3 = Config.getConfig().getStringList("ShopEdit.Price-Line.Fee-Perms");
+        shopeditFeePerms_L4 = Config.getConfig().getStringList("ShopEdit.Item-Line.Fee-Perms");
     }
     
     private static Configuration getConfig() {

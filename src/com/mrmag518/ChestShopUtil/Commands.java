@@ -202,14 +202,46 @@ public class Commands implements CommandExecutor {
                 Sign sign = (Sign)b.getState();
                 
                 if(ChestShopSign.isValid(sign)) {
+                    double fee = 0;
+                    
                     if(line == ChestShopSign.NAME_LINE) {
                         if(!p.hasPermission("csu.command.shopedit.admin")) {
                             p.sendMessage(Local.s(LocalOutput.SHOPEDIT_CANT_MODIFY_OWNER));
                             return;
                         }
                         
-                        if(!EcoHandler.hasAtleast(p.getName(), Config.shopeditOwnerFee)) {
-                            p.sendMessage(Local.s(LocalOutput.TOO_POOR).replace("%money%", String.valueOf(Config.shopeditOwnerFee)));
+                        for(String s : Config.shopeditFeePerms_L1) {
+                            if(s != null && s.contains(";")) {
+                                String[] split = s.split(";");
+                                String perm = split[0];
+                                double i;
+                                
+                                try {
+                                    i = Double.parseDouble(split[1]);
+                                } catch(NumberFormatException e) {
+                                    Log.severe(split[1] + " is not a valid number! (" + s + ")");
+                                    return;
+                                }
+                                
+                                if(i > 0) {
+                                    if(p.hasPermission(perm)) {
+                                        fee = i;
+                                        break;
+                                    }
+                                }
+                            } else {
+                                Log.severe("Found a bad formatted custom permission! (" + s + ")");
+                            }
+                        }
+                        
+                        if(fee == 0) {
+                            fee = Config.shopeditOwnerFee;
+                        }
+                        
+                        fee = (p.hasPermission("csu.command.shopedit.bypass-fee") ? 0 : fee);
+                        
+                        if(!EcoHandler.hasAtleast(p.getName(), fee)) {
+                            p.sendMessage(Local.s(LocalOutput.TOO_POOR).replace("%money%", String.valueOf(fee)));
                             return;
                         }
                         String[] lines = {input, sign.getLine(1), sign.getLine(2), sign.getLine(3)};
@@ -235,8 +267,38 @@ public class Commands implements CommandExecutor {
                             }
                         }
                         
-                        if(!EcoHandler.hasAtleast(p.getName(), Config.shopeditAmountFee)) {
-                            p.sendMessage(Local.s(LocalOutput.TOO_POOR).replace("%money%", String.valueOf(Config.shopeditAmountFee)));
+                        for(String s : Config.shopeditFeePerms_L2) {
+                            if(s != null && s.contains(";")) {
+                                String[] split = s.split(";");
+                                String perm = split[0];
+                                double i;
+                                
+                                try {
+                                    i = Double.parseDouble(split[1]);
+                                } catch(NumberFormatException e) {
+                                    Log.severe(split[1] + " is not a valid number! (" + s + ")");
+                                    return;
+                                }
+                                
+                                if(i > 0) {
+                                    if(p.hasPermission(perm)) {
+                                        fee = i;
+                                        break;
+                                    }
+                                }
+                            } else {
+                                Log.severe("Found a bad formatted custom permission! (" + s + ")");
+                            }
+                        }
+                        
+                        if(fee == 0) {
+                            fee = Config.shopeditAmountFee;
+                        }
+                        
+                        fee = (p.hasPermission("csu.command.shopedit.bypass-fee") ? 0 : fee);
+                        
+                        if(!EcoHandler.hasAtleast(p.getName(), fee)) {
+                            p.sendMessage(Local.s(LocalOutput.TOO_POOR).replace("%money%", String.valueOf(fee)));
                             return;
                         }
                         String[] lines = {sign.getLine(0), input, sign.getLine(2), sign.getLine(3)};
@@ -262,8 +324,38 @@ public class Commands implements CommandExecutor {
                             }
                         }
                         
-                        if(!EcoHandler.hasAtleast(p.getName(), Config.shopeditPriceFee)) {
-                            p.sendMessage(Local.s(LocalOutput.TOO_POOR).replace("%money%", String.valueOf(Config.shopeditPriceFee)));
+                        for(String s : Config.shopeditFeePerms_L3) {
+                            if(s != null && s.contains(";")) {
+                                String[] split = s.split(";");
+                                String perm = split[0];
+                                double i;
+                                
+                                try {
+                                    i = Double.parseDouble(split[1]);
+                                } catch(NumberFormatException e) {
+                                    Log.severe(split[1] + " is not a valid number! (" + s + ")");
+                                    return;
+                                }
+                                
+                                if(i > 0) {
+                                    if(p.hasPermission(perm)) {
+                                        fee = i;
+                                        break;
+                                    }
+                                }
+                            } else {
+                                Log.severe("Found a bad formatted custom permission! (" + s + ")");
+                            }
+                        }
+                        
+                        if(fee == 0) {
+                            fee = Config.shopeditPriceFee;
+                        }
+                        
+                        fee = (p.hasPermission("csu.command.shopedit.bypass-fee") ? 0 : fee);
+                        
+                        if(!EcoHandler.hasAtleast(p.getName(), fee)) {
+                            p.sendMessage(Local.s(LocalOutput.TOO_POOR).replace("%money%", String.valueOf(fee)));
                             return;
                         }
                         String[] lines = {sign.getLine(0), sign.getLine(1), input, sign.getLine(3)};
@@ -289,8 +381,38 @@ public class Commands implements CommandExecutor {
                             }
                         }
                         
-                        if(!EcoHandler.hasAtleast(p.getName(), Config.shopeditItemFee)) {
-                            p.sendMessage(Local.s(LocalOutput.TOO_POOR).replace("%money%", String.valueOf(Config.shopeditItemFee)));
+                        for(String s : Config.shopeditFeePerms_L4) {
+                            if(s != null && s.contains(";")) {
+                                String[] split = s.split(";");
+                                String perm = split[0];
+                                double i;
+                                
+                                try {
+                                    i = Double.parseDouble(split[1]);
+                                } catch(NumberFormatException e) {
+                                    Log.severe(split[1] + " is not a valid number! (" + s + ")");
+                                    return;
+                                }
+                                
+                                if(i > 0) {
+                                    if(p.hasPermission(perm)) {
+                                        fee = i;
+                                        break;
+                                    }
+                                }
+                            } else {
+                                Log.severe("Found a bad formatted custom permission! (" + s + ")");
+                            }
+                        }
+                        
+                        if(fee == 0) {
+                            fee = Config.shopeditItemFee;
+                        }
+                        
+                        fee = (p.hasPermission("csu.command.shopedit.bypass-fee") ? 0 : fee);
+                        
+                        if(!EcoHandler.hasAtleast(p.getName(), fee)) {
+                            p.sendMessage(Local.s(LocalOutput.TOO_POOR).replace("%money%", String.valueOf(fee)));
                             return;
                         }
                         String[] lines = {sign.getLine(0), sign.getLine(1), sign.getLine(2), input};

@@ -32,6 +32,7 @@ permissions:
       csu.daily.adminshop.maxsell.*: true
       csu.daily.shop.maxbuy.*: true
       csu.daily.shop.maxsell.*: true
+      csu.command.shopedit.bypass-fee: true
   csu.command.*:
     default: op
     children:
@@ -42,6 +43,7 @@ permissions:
       csu.command.main: true
       csu.command.shopedit.user: true
       csu.command.shopedit.admin: true
+      csu.command.shopedit.bypass-fee: true
   csu.bypass.global-maxbuy:
     default: op
   csu.bypass.global-maxsell:
@@ -84,3 +86,6 @@ permissions:
     default: op
     children:
       csu.command.shopedit.user: true
+      csu.command.shopedit.bypass-fee: true
+  csu.command.shopedit.bypass-fee:
+    default: op
