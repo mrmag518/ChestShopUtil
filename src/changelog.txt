@@ -1,3 +1,6 @@
+Version 1.x
+* 
+
 Version 1.1
 * shops.yml format has changed in order to give better support for additional entries.
 * Added per-player daily max buy & sell amount for both admin shops and normal shops.

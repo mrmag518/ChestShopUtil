@@ -72,7 +72,7 @@ public class Config {
         config.addDefault("UpdateChecker.Enabled", true, "Checks for an available update when CSU is being enabled."
                 + ";This will not download anything, only notify you if"
                 + ";there is an update available."
-                + ";-"
+                + ";"
                 + ";Use-Multi-Threading - Will run the update check on a"
                 + ";separate thread.");
         config.addDefault("UpdateChecker.Use-Multi-Threading", true, null);
@@ -121,7 +121,7 @@ public class Config {
                 + ";from the specific shop type, per day."
                 + ";This will create a shops.yml file if one does exist."
                 + ";Which will be used as a database."
-                + ";-"
+                + ";"
                 + ";OverflowLimit - When a player trades with a shop without"
                 + ";having exceeded the limit, but the amount he is about"
                 + ";to buy/sell will make him exceed the limit."
@@ -139,7 +139,7 @@ public class Config {
         
         config.addDefault("ShopEdit.Name-Line.Fee", 0, "The amount of money to remove from the user when"
                 + ";editing a chestshop."
-                + ";-"
+                + ";"
                 + ";Fee-Perms - Define your own custom fee permissions."
                 + ";CSU will check users for all defined permissions here.");
         config.addDefault("ShopEdit.Name-Line.Fee-Perms", shopedit_perms1, null);

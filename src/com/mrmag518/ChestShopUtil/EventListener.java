@@ -31,7 +31,6 @@ public class EventListener implements Listener {
         plugin = instance;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
-    private final String prefix = ChatColor.BLUE + "[" + ChatColor.GRAY + "ChestShopUtil" + ChatColor.BLUE + "] " + ChatColor.WHITE;
     
     @EventHandler
     public void handlePreCreation(PreShopCreationEvent event) {
@@ -569,9 +568,10 @@ public class EventListener implements Listener {
             Player p = event.getPlayer();
             
             if(p.isOp() || p.hasPermission("csu.getupdate")) {
-                p.sendMessage(prefix + ChatColor.BLUE + "A new update is available! (" + ChatColor.GRAY + plugin.verionFound
-                        + ChatColor.BLUE + ")");
-                p.sendMessage(prefix + ChatColor.BLUE + "Currently running version " + ChatColor.GRAY + plugin.getVersion());
+                final String prefix = "§9[§7ChestShopUtil§9] ";
+                
+                p.sendMessage(prefix + "A new update is available! (§7" + plugin.verionFound + "§9)");
+                p.sendMessage(prefix + "Currently running version §7"+ plugin.getVersion());
             }
         }
     }
