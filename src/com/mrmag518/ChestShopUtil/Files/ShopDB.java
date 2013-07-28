@@ -47,20 +47,18 @@ public class ShopDB {
                 ConfigurationSection cs = database.getConfigurationSection("Players");
                 
                 if(cs != null) {
-                    for(String s : cs.getKeys(true)) {
-                        if(!s.contains(".")) {
-                            if(cs.getInt(s + ".AdminSoldToday") > 0) {
-                                cs.set(s + ".AdminSoldToday", 0);
-                            }
-                            if(cs.getInt(s + ".SoldToday") > 0) {
-                                cs.set(s + ".SoldToday", 0);
-                            }
-                            if(cs.getInt(s + ".AdminBoughtToday") > 0) {
-                                cs.set(s + ".AdminBoughtToday", 0);
-                            }
-                            if(cs.getInt(s + ".BoughtToday") > 0) {
-                                cs.set(s + ".BoughtToday", 0);
-                            }
+                    for(String s : cs.getKeys(false)) {
+                        if(cs.getInt(s + ".AdminSoldToday") > 0) {
+                            cs.set(s + ".AdminSoldToday", 0);
+                        }
+                        if(cs.getInt(s + ".SoldToday") > 0) {
+                            cs.set(s + ".SoldToday", 0);
+                        }
+                        if(cs.getInt(s + ".AdminBoughtToday") > 0) {
+                            cs.set(s + ".AdminBoughtToday", 0);
+                        }
+                        if(cs.getInt(s + ".BoughtToday") > 0) {
+                            cs.set(s + ".BoughtToday", 0);
                         }
                     }
                     save();
