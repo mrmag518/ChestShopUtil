@@ -1,20 +1,22 @@
 package com.mrmag518.ChestShopUtil.Files;
 
-import com.mrmag518.ChestShopUtil.CSU;
-import com.mrmag518.ChestShopUtil.Util.ConfigManager;
-import com.mrmag518.ChestShopUtil.Util.Configuration;
 import com.mrmag518.ChestShopUtil.Util.Log;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public class Config {
-    private static final CSU plugin = (CSU)Bukkit.getPluginManager().getPlugin("ChestShopUtil");
-    private static ConfigManager manager = new ConfigManager(plugin);
-    private static Configuration config = null;
+    private static FileConfiguration config = null;
+    private static File configFile = null;
     
     // ----
     public static long cooldown;
@@ -45,18 +47,15 @@ public class Config {
     public static List<String> shopeditFeePerms_L4;
     // ----
     
-    public static void load() {
-        File f = new File("plugins" + File.separator + "ChestShopUtil" + File.separator + "config.yml");
-        
-        if(!f.exists()) {
-            try {
-                f.createNewFile();
-            } catch (IOException ex) {
-                Log.severe("An error occured while creating the config.yml file!");
-                ex.printStackTrace();
-            }
-        }
-        config = manager.getNewConfig("config.yml");
+    public static void properLoad() {
+        reload();
+        load();
+        reload();
+        Log.info("Config loaded.");
+    }
+    
+    private static void load() {
+        config = getConfig();
         
         String[] default_create_worlds = {"example_world1", "example2"};
         String[] default_trade_worlds = {"example"};
@@ -67,157 +66,245 @@ public class Config {
         String[] shopedit_perms1 = {"my.custom.permission;0"}; // YAML refuses to cooperate unless I separate the lists for some reason..
         String[] shopedit_perms2 = {"my.custom.permission;0"};
         String[] shopedit_perms3 = {"my.custom.permission;0"};
-        String[] shopedit_perms4 = {"my.custom.permission;0", "fee.is.after.semicolon;10"};
+        String[] shopedit_perms4 = {"my.custom.permission;0", "example.donator.package.vip;10"};
         
-        config.addDefault("UpdateChecker.Enabled", true, "Checks for an available update when CSU is being enabled."
-                + ";This will not download anything, only notify you if"
-                + ";there is an update available."
-                + ";"
-                + ";Use-Multi-Threading - Will run the update check on a"
-                + ";separate thread.");
-        config.addDefault("UpdateChecker.Use-Multi-Threading", true, null);
+        config.options().header("For help with these configuration options, \n"
+                + "please see the 'plugins/ChestShopUtil/config_explained.yml' file."
+                + "\n");
         
-        config.addDefault("Global-Max-Buy-Price", 0.0, "Prevents players from creating shops with a buy;price above this value."
-                + ";A value of 0 will be ignored.");
+        config.addDefault("UpdateChecker.Enabled", true);
+        config.addDefault("UpdateChecker.UseMultiThreading", true);
         
-        config.addDefault("Global-Max-Sell-Price", 0.0, "Prevents players from creating shops with a sell;price above this value."
-                + ";A value of 0 will be ignored.");
+        config.addDefault("Global.MaxBuyPrice", 0);
+        config.addDefault("Global.MaxSellPrice", 0);
+        config.addDefault("Global.MaxShopsPerPlayer", 0);
         
-        config.addDefault("Disallowed-Create-Worlds", default_create_worlds, "Prevents shops from being created in these worlds.");
+        config.addDefault("DisallowedCreateWorlds", default_create_worlds);
+        config.addDefault("DisallowedTradeWorlds", default_trade_worlds);
         
-        config.addDefault("Disallowed-Trade-Worlds", default_trade_worlds, "Prevent players from doing transactions with ChestShop"
-                + ";in these worlds.");
+        config.addDefault("BlacklistedItems", default_items);
         
-        config.addDefault("Disallowed-Items", default_items, "Prevents players from creating shops trading these items.");
+        config.addDefault("ItemPrices.Max.Buy", default_buy_prices);
+        config.addDefault("ItemPrices.Max.Sell", default_sell_prices);
         
-        config.addDefault("Max-Buy-Prices", default_buy_prices, "Prevents players from creating shops with a buy"
-                + ";price above the max for a specific item."
-                + ";The last number after the separation symbol is the price."
-                + ";A price value of 0 wil be ignored.");
+        config.addDefault("TimePeriods.Periods", default_times);
         
-        config.addDefault("Max-Sell-Prices", default_sell_prices, "Prevents players from creating shops with a sell"
-                + ";price above the max for a specific item."
-                + ";The last number after the semicolon is the price."
-                + ";A price value of 0 wil be ignored.");
+        config.addDefault("CreationCooldown", 0);
         
-        config.addDefault("Max-Shops-Per-Player", 0, "Setting this to a value above 0 will enable the feature."
-                + ";This will create a shops.yml file if one does not exist."
-                + ";Which will be used as a database."
-                + ";This feature prevents players from creating too many shops."
-                + ";Can be overriden by the permission csu.maxshops.x"
-                + ";Where x is a number.");
+        config.addDefault("Daily.Max.Buy.AdminShop", 0);
+        config.addDefault("Daily.Max.Buy.PlayerShop", 0);
+        config.addDefault("Daily.Max.Buy.OverflowLimit", 10);
         
-        config.addDefault("Disallowed-Time-Periods", default_times, "Will prevent players from using shops in certain"
-                + ";time periods."
-                + ";For instance, 1000-4000 will prevent players from using"
-                + ";shops from tick 1000 to tick 4000.");
+        config.addDefault("Daily.Max.Sell.AdminShop", 0);
+        config.addDefault("Daily.Max.Sell.PlayerShop", 0);
+        config.addDefault("Daily.Max.Sell.OverflowLimit", 10);
         
-        config.addDefault("Creation-Cooldown", 0, "Cooldown in milliseconds between each shop creation."
-                + ";(per player)"
-                + ";1000ms = 1sec"
-                + ";A value of 0 will be ignored.");
+        config.addDefault("ShopEdit.Name.Fee", 0);
+        config.addDefault("ShopEdit.Name.FeePerms", shopedit_perms1);
+        config.addDefault("ShopEdit.Quantity.Fee", 0);
+        config.addDefault("ShopEdit.Quantity.FeePerms", shopedit_perms2);
+        config.addDefault("ShopEdit.Price.Fee", 0);
+        config.addDefault("ShopEdit.Price.FeePerms", shopedit_perms3);
+        config.addDefault("ShopEdit.Item.Fee", 0);
+        config.addDefault("ShopEdit.Item.FeePerms", shopedit_perms4);
         
-        config.addDefault("Daily.Max.Buy.AdminShop", 0, "Will prevent players from buying/selling too many items"
-                + ";from the specific shop type, per day."
-                + ";This will create a shops.yml file if one does exist."
-                + ";Which will be used as a database."
-                + ";"
-                + ";OverflowLimit - When a player trades with a shop without"
-                + ";having exceeded the limit, but the amount he is about"
-                + ";to buy/sell will make him exceed the limit."
-                + ";Example, ADude has bought 99/100 items, but the amount"
-                + ";he is about to buy is 5, he would exceed the limit with"
-                + ";104/100 items. Setting the OverflowLimit to 5 would allow"
-                + ";ADude to buy with this overflow, which would mark him"
-                + ";having bought a total of 104/100 items.");
-        config.addDefault("Daily.Max.Buy.PlayerShop", 0, null);
-        config.addDefault("Daily.Max.Buy.OverflowLimit", 50, null);
-        
-        config.addDefault("Daily.Max.Sell.AdminShop", 0, null);
-        config.addDefault("Daily.Max.Sell.PlayerShop", 0, null);
-        config.addDefault("Daily.Max.Sell.OverflowLimit", 50, null);
-        
-        config.addDefault("ShopEdit.Name-Line.Fee", 0, "The amount of money to remove from the user when"
-                + ";editing a chestshop."
-                + ";"
-                + ";Fee-Perms - Define your own custom fee permissions."
-                + ";CSU will check users for all defined permissions here.");
-        config.addDefault("ShopEdit.Name-Line.Fee-Perms", shopedit_perms1, null);
-        config.addDefault("ShopEdit.Quantity-Line.Fee", 0, null);
-        config.addDefault("ShopEdit.Quantity-Line.Fee-Perms", shopedit_perms2, null);
-        config.addDefault("ShopEdit.Price-Line.Fee", 0, null);
-        config.addDefault("ShopEdit.Price-Line.Fee-Perms", shopedit_perms3, null);
-        config.addDefault("ShopEdit.Item-Line.Fee", 0, null);
-        config.addDefault("ShopEdit.Item-Line.Fee-Perms", shopedit_perms4, null);
-        
-        /*config.addDefault("Item-Currency.Enabled", false, 
-                  "Enable, Enables the item currency feature."
-                + ";Item-Currency will use items instead of virtual money."
-                + ";Sign format is still the same. The only difference is"
-                + ";that the price for items will be handled as items."
-                + ";"
-                + ";Max-Price, Prevents players from creating prices above;the reasonable"
-                + ";"
-                + ";Item, The item id for the item to use as currency."
-                + ";"
-                + ";ItemValue, How much cash is 1 of your selected item worth?");
-        config.addDefault("Item-Currency.Max-Price", 2304, null);
-        config.addDefault("Item-Currency.Item", 266, null);
-        config.addDefault("Item-Currency.ItemValue", 20, null);*/
-        
+        getConfig().options().copyDefaults(true);
         save();
+        runTransitioner(); // 1.0,1.1 -> 1.2+ config transition.
         cacheVariables();
-        Log.info("Config loaded.");
+        handleExplanation();
     }
     
-    private static void cacheVariables() {
-        cooldown = Config.getConfig().getLong("Creation-Cooldown");
-        maxShops = Config.getConfig().getInt("Max-Shops-Per-Player");
-        disallowedCreateWorlds = Config.getConfig().getStringList("Disallowed-Create-Worlds");
-        disallowedItems = Config.getConfig().getStringList("Disallowed-Items");
-        maxBuyPrice = Config.getConfig().getDouble("Global-Max-Buy-Price");
-        maxSellPrice = Config.getConfig().getDouble("Global-Max-Sell-Price");
-        maxBuyPrices = Config.getConfig().getStringList("Max-Buy-Prices");
-        maxSellPrices = Config.getConfig().getStringList("Max-Sell-Prices");
-        disallowedTradeWorlds = Config.getConfig().getStringList("Disallowed-Trade-Worlds");
-        tradePeriods = Config.getConfig().getStringList("Disallowed-Time-Periods");
-        checkUpdates = Config.getConfig().getBoolean("UpdateChecker.Enabled");
-        useMultiThread = Config.getConfig().getBoolean("UpdateChecker.Use-Multi-Threading");
-        maxDailyAdminShopBuy = Config.getConfig().getInt("Daily.Max.Buy.AdminShop");
-        maxDailyAdminShopSell = Config.getConfig().getInt("Daily.Max.Sell.AdminShop");
-        maxDailyShopBuy = Config.getConfig().getInt("Daily.Max.Buy.PlayerShop");
-        maxDailyShopSell = Config.getConfig().getInt("Daily.Max.Sell.PlayerShop");
-        maxBuyOverflow = Config.getConfig().getInt("Daily.Max.Buy.OverflowLimit");
-        maxSellOverflow = Config.getConfig().getInt("Daily.Max.Sell.OverflowLimit");
-        shopeditOwnerFee = Config.getConfig().getDouble("ShopEdit.Name-Line.Fee");
-        shopeditAmountFee = Config.getConfig().getDouble("ShopEdit.Quantity-Line.Fee");
-        shopeditPriceFee = Config.getConfig().getDouble("ShopEdit.Price-Line.Fee");
-        shopeditItemFee = Config.getConfig().getDouble("ShopEdit.Item-Line.Fee");
-        shopeditFeePerms_L1 = Config.getConfig().getStringList("ShopEdit.Name-Line.Fee-Perms");
-        shopeditFeePerms_L2 = Config.getConfig().getStringList("ShopEdit.Quantity-Line.Fee-Perms");
-        shopeditFeePerms_L3 = Config.getConfig().getStringList("ShopEdit.Price-Line.Fee-Perms");
-        shopeditFeePerms_L4 = Config.getConfig().getStringList("ShopEdit.Item-Line.Fee-Perms");
+    private static void reload() {
+        if(configFile == null) {
+            configFile = new File("plugins/ChestShopUtil/config.yml");
+        }
+        config = YamlConfiguration.loadConfiguration(configFile);
+        cacheVariables();
     }
     
-    private static Configuration getConfig() {
+    public static FileConfiguration getConfig() {
         if(config == null) {
-            load();
+            reload();
         }
         return config;
     }
     
-    public static void reload() {
-        if(config == null) {
-            load();
+    public static void save() {
+        if(config == null || configFile == null) {
+            return;
         }
-        config.reloadConfig();
-        cacheVariables();
+        
+        try {
+            config.save(configFile);
+        } catch (IOException ex) {
+            Logger.getLogger(JavaPlugin.class.getName()).log(Level.SEVERE, "Could not save config.yml to " + configFile, ex);
+        }
     }
     
-    public static void save() {
-        if(config == null) {
-            load();
+    private static void cacheVariables() {
+        cooldown = getConfig().getLong("CreationCooldown");
+        maxShops = getConfig().getInt("Global.MaxShopsPerPlayer");
+        disallowedCreateWorlds = getConfig().getStringList("DisallowedCreateWorlds");
+        disallowedItems = getConfig().getStringList("BlacklistedItems");
+        maxBuyPrice = getConfig().getDouble("Global.MaxBuyPrice");
+        maxSellPrice = getConfig().getDouble("Global.MaxSellPrice");
+        maxBuyPrices = getConfig().getStringList("ItemPrices.Max.Buy");
+        maxSellPrices = getConfig().getStringList("ItemPrices.Max.Sell");
+        disallowedTradeWorlds = getConfig().getStringList("DisallowedTradeWorlds");
+        tradePeriods = getConfig().getStringList("TimePeriods.Periods");
+        checkUpdates = getConfig().getBoolean("UpdateChecker.Enabled");
+        useMultiThread = getConfig().getBoolean("UpdateChecker.UseMultiThreading");
+        maxDailyAdminShopBuy = getConfig().getInt("Daily.Max.Buy.AdminShop");
+        maxDailyAdminShopSell = getConfig().getInt("Daily.Max.Sell.AdminShop");
+        maxDailyShopBuy = getConfig().getInt("Daily.Max.Buy.PlayerShop");
+        maxDailyShopSell = getConfig().getInt("Daily.Max.Sell.PlayerShop");
+        maxBuyOverflow = getConfig().getInt("Daily.Max.Buy.OverflowLimit");
+        maxSellOverflow = getConfig().getInt("Daily.Max.Sell.OverflowLimit");
+        shopeditOwnerFee = getConfig().getDouble("ShopEdit.Name.Fee");
+        shopeditAmountFee = getConfig().getDouble("ShopEdit.Quantity.Fee");
+        shopeditPriceFee = getConfig().getDouble("ShopEdit.Price.Fee");
+        shopeditItemFee = getConfig().getDouble("ShopEdit.Item.Fee");
+        shopeditFeePerms_L1 = getConfig().getStringList("ShopEdit.Name.FeePerms");
+        shopeditFeePerms_L2 = getConfig().getStringList("ShopEdit.Quantity.FeePerms");
+        shopeditFeePerms_L3 = getConfig().getStringList("ShopEdit.Price.FeePerms");
+        shopeditFeePerms_L4 = getConfig().getStringList("ShopEdit.Item.FeePerms");
+    }
+    
+    private static void runTransitioner() {
+        boolean oldBoolean;
+        int oldInt;
+        double oldDouble;
+        long oldLong;
+        List<String> oldList;
+        
+        if(config.get("UpdateChecker.Use-Multi-Threading") != null) {
+            oldBoolean = config.getBoolean("UpdateChecker.Use-Multi-Threading");
+            config.set("UpdateChecker.Use-Multi-Threading", null);
+            config.set("UpdateChecker.UseMultiThreading", oldBoolean);
         }
-        config.saveConfig();
+        
+        if(config.get("Global-Max-Buy-Price") != null) {
+            oldInt = config.getInt("Global-Max-Buy-Price");
+            config.set("Global-Max-Buy-Price", null);
+            config.set("Global.MaxBuyPrice", oldInt);
+        }
+        
+        if(config.get("Global-Max-Sell-Price") != null) {
+            oldInt = config.getInt("Global-Max-Sell-Price"); 
+            config.set("Global-Max-Sell-Price", null); 
+            config.set("Global.MaxSellPrice", oldInt);
+        }
+        
+        if(config.get("Disallowed-Create-Worlds") != null) {
+            oldList = config.getStringList("Disallowed-Create-Worlds");
+            config.set("Disallowed-Create-Worlds", null);
+            config.set("DisallowedCreateWorlds", oldList);
+        }
+        
+        if(config.get("Disallowed-Trade-Worlds") != null) {
+            oldList = config.getStringList("Disallowed-Trade-Worlds");
+            config.set("Disallowed-Trade-Worlds", null);
+            config.set("DisallowedTradeWorlds", oldList);
+        }
+        
+        if(config.get("Disallowed-Items") != null) {
+            oldList = config.getStringList("Disallowed-Items");
+            config.set("Disallowed-Items", null);
+            config.set("BlacklistedItems", oldList);
+        }
+        
+        if(config.get("Max-Buy-Prices") != null) {
+            oldList = config.getStringList("Max-Buy-Prices");
+            config.set("Max-Buy-Prices", null);
+            config.set("ItemPrices.Max.Buy", oldList);
+        }
+        
+        if(config.get("Max-Sell-Prices") != null) {
+            oldList = config.getStringList("Max-Sell-Prices");
+            config.set("Max-Sell-Prices", null);
+            config.set("ItemPrices.Max.Sell", oldList);
+        }
+        
+        if(config.get("Max-Shops-Per-Player") != null) {
+            oldInt = config.getInt("Max-Shops-Per-Player");
+            config.set("Max-Shops-Per-Player", null);
+            config.set("Global.MaxShopsPerPlayer", oldInt);
+        }
+        
+        if(config.get("Disallowed-Time-Periods") != null) {
+            oldList = config.getStringList("Disallowed-Time-Periods");
+            config.set("Disallowed-Time-Periods", null);
+            config.set("TimePeriods.Periods", oldList);
+        }
+        
+        if(config.get("Creation-Cooldown") != null) {
+            oldLong = config.getLong("Creation-Cooldown");
+            config.set("Creation-Cooldown", null);
+            config.set("CreationCooldown", oldLong);
+        }
+        
+        if(config.get("ShopEdit.Name-Line.Fee") != null) {
+            oldDouble = config.getDouble("ShopEdit.Name-Line.Fee");
+            config.set("ShopEdit.Name-Line.Fee", null);
+            config.set("ShopEdit.Name.Fee", oldDouble);
+        }
+        
+        if(config.get("ShopEdit.Name-Line.Fee-Perms") != null) {
+            oldList = config.getStringList("ShopEdit.Name-Line.Fee-Perms");
+            config.set("ShopEdit.Name-Line", null);
+            config.set("ShopEdit.Name.FeePerms", oldList);
+        }
+        
+        if(config.get("ShopEdit.Quantity-Line.Fee") != null) {
+            oldDouble = config.getDouble("ShopEdit.Quantity-Line.Fee");
+            config.set("ShopEdit.Quantity-Line.Fee", null);
+            config.set("ShopEdit.Quantity.Fee", oldDouble);
+        }
+        
+        if(config.get("ShopEdit.Quantity-Line.Fee-Perms") != null) {
+            oldList = config.getStringList("ShopEdit.Quantity-Line.Fee-Perms");
+            config.set("ShopEdit.Quantity-Line", null);
+            config.set("ShopEdit.Quantity.FeePerms", oldList);
+        }
+        
+        if(config.get("ShopEdit.Price-Line.Fee") != null) {
+            oldDouble = config.getDouble("ShopEdit.Price-Line.Fee");
+            config.set("ShopEdit.Price-Line.Fee", null);
+            config.set("ShopEdit.Price.Fee", oldDouble);
+        }
+        
+        if(config.get("ShopEdit.Price-Line.Fee-Perms") != null) {
+            oldList = config.getStringList("ShopEdit.Price-Line.Fee-Perms");
+            config.set("ShopEdit.Price-Line", null);
+            config.set("ShopEdit.Price.FeePerms", oldList);
+        }
+        
+        if(config.get("ShopEdit.Item-Line.Fee") != null) {
+            oldDouble = config.getDouble("ShopEdit.Item-Line.Fee");
+            config.set("ShopEdit.Item-Line.Fee", null);
+            config.set("ShopEdit.Item.Fee", oldDouble);
+        }
+        
+        if(config.get("ShopEdit.Item-Line.Fee-Perms") != null) {
+            oldList = config.getStringList("ShopEdit.Item-Line.Fee-Perms");
+            config.set("ShopEdit.Item-Line", null);
+            config.set("ShopEdit.Item.FeePerms", oldList);
+        }
+        save();
+    }
+    
+    private static void handleExplanation() {
+        File f = new File("plugins/ChestShopUtil/config_explained.yml");
+        Plugin plugin = Bukkit.getPluginManager().getPlugin("ChestShopUtil");
+        
+        if(!f.exists()) {
+            try {
+                f.createNewFile();
+            } catch (IOException ex) {
+                Log.severe("An error occured while creating the 'config_explained.yml' file!");
+            }
+        }
+        plugin.saveResource(f.getName(), true);
     }
 }

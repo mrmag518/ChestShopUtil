@@ -61,8 +61,8 @@ public class Commands implements CommandExecutor {
                             if(!plugin.getDataFolder().exists()) {
                                 plugin.getDataFolder().mkdir();
                             }
-                            Config.load();
-                            Local.load();
+                            Config.properLoad();
+                            Local.properLoad();
                             ShopDB.properLoad();
                             
                             if(ShopDB.use()) {
@@ -120,8 +120,8 @@ public class Commands implements CommandExecutor {
                         if(!plugin.getDataFolder().exists()) {
                             plugin.getDataFolder().mkdir();
                         }
-                        Config.load();
-                        Local.load();
+                        Config.properLoad();
+                        Local.properLoad();
                         ShopDB.properLoad();
                         
                         if(ShopDB.use()) {

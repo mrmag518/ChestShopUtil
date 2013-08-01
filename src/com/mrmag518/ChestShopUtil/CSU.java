@@ -48,8 +48,8 @@ public class CSU extends JavaPlugin {
             getDataFolder().mkdir();
         }
         checkPlugins();
-        Config.load();
-        Local.load();
+        Config.properLoad();
+        Local.properLoad();
         ShopDB.properLoad();
         
         if(Config.checkUpdates) {
@@ -109,7 +109,7 @@ public class CSU extends JavaPlugin {
                 case FAIL_DBO:
                     Log.warning("Failed to contact dev.bukkkit.org!");
                     if(s != null) {
-                        s.sendMessage(ChatColor.RED + "Failed to contact deve.bukkit.org!");
+                        s.sendMessage(ChatColor.RED + "Failed to contact dev.bukkit.org!");
                     }
                     break;
                 case UPDATE_AVAILABLE:

@@ -1,6 +1,6 @@
 author: mrmag518
 main: com.mrmag518.ChestShopUtil.CSU
-version: '1.1'
+version: '1.2'
 name: ChestShopUtil
 description: "Adds new utilities, features and user limitations to ChestShop"
 softdepend: [ChestShop, Vault]
