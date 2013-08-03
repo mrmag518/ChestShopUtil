@@ -25,18 +25,17 @@ public class CSU extends JavaPlugin {
     public boolean updateFound = false;
     public String verionFound = "";
     private Plugin chestshop = null;
-    public BukkitTask timeChecker = null;
+    public BukkitTask dateChecker = null;
     
     /**
      * Self reminder:
-     * - Make daily events such as the max buy & sell feature reset at midnight.
      * - World variable support for most lists.
      * - Max sell and buy per day for specific items.
      */
     
     @Override
     public void onDisable() {
-        timeChecker = null;
+        dateChecker = null;
         Log.info("Version " + getVersion() + " disabled.");
     }
     
@@ -66,7 +65,7 @@ public class CSU extends JavaPlugin {
         }
         
         if(ShopDB.use()) {
-            startTimeCheck();
+            startDateCheck();
         }
         
         getCommand("chestshoputil").setExecutor(new Commands(this));
@@ -74,14 +73,14 @@ public class CSU extends JavaPlugin {
         Log.info("Version " + getVersion() + " enabled.");
     }
     
-    public void startTimeCheck() {
-        if(timeChecker == null) {
+    public void startDateCheck() {
+        if(dateChecker == null) {
             Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
                 @Override
                 public void run() {
-                    ShopDB.properLoad();
+                    ShopDB.handleDateProcessing();
                 }
-            }, 864000, 864000); // Run every 12th hour.
+            }, 6000, 6000); // Run every 5th minute.
         }
     }
     

@@ -66,7 +66,7 @@ public class Commands implements CommandExecutor {
                             ShopDB.properLoad();
                             
                             if(ShopDB.use()) {
-                                plugin.startTimeCheck();
+                                plugin.startDateCheck();
                             }
                             s.sendMessage(ChatColor.GRAY + "ChestShopUtil v" + plugin.getVersion() + ChatColor.BLUE + " reloaded.");
                         } else {
@@ -125,7 +125,7 @@ public class Commands implements CommandExecutor {
                         ShopDB.properLoad();
                         
                         if(ShopDB.use()) {
-                            plugin.startTimeCheck();
+                            plugin.startDateCheck();
                         }
                         s.sendMessage("ChestShopUtil v" + plugin.getVersion() + " reloaded.");
                     } else if(args[0].equalsIgnoreCase("version")) {

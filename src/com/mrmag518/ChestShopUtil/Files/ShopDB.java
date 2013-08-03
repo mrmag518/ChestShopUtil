@@ -41,42 +41,13 @@ public class ShopDB {
         database.addDefault("Util.Today", time.formatDate(time.getToday()));
         database.addDefault("Util.Tomorrow", time.formatDate(time.getTomorrow()));
         
-        Date recTomorrow = time.parseDate(database.getString("Util.Tomorrow"));
-        Date recToday = time.parseDate(database.getString("Util.Today"));
+        handleDateProcessing();
         
-        if(recToday.equals(recTomorrow)) {
-            database.set("Util.Today", time.formatDate(time.getToday()));
-            database.set("Util.Tomorrow", time.formatDate(time.getTomorrow()));
-        } else if(time.getToday().equals(recTomorrow) || time.getToday().after(recTomorrow)) {
-            database.set("Util.Today", time.formatDate(time.getToday()));
-            database.set("Util.Tomorrow", time.formatDate(time.getTomorrow()));
-            
-            ConfigurationSection cs = database.getConfigurationSection("Players");
-            
-            if(cs != null) {
-                for(String s : cs.getKeys(false)) {
-                    if(cs.getInt(s + ".AdminSoldToday") > 0) {
-                        cs.set(s + ".AdminSoldToday", 0);
-                    }
-                    if(cs.getInt(s + ".SoldToday") > 0) {
-                        cs.set(s + ".SoldToday", 0);
-                    }
-                    if(cs.getInt(s + ".AdminBoughtToday") > 0) {
-                        cs.set(s + ".AdminBoughtToday", 0);
-                    }
-                    if(cs.getInt(s + ".BoughtToday") > 0) {
-                        cs.set(s + ".BoughtToday", 0);
-                    }
-                }
-                save();
-            }
-        }
         database.addDefault("Util.ShopPermSearchCap", 508);
         
         if(database.getConfigurationSection("Players") == null) {
             database.createSection("Players");
         }
-        
         cacheVariables();
         getDB().options().copyDefaults(true);
         save();
@@ -113,6 +84,41 @@ public class ShopDB {
     
     public static boolean use() {
         return Config.maxShops > 0 || Config.maxDailyAdminShopBuy > 0 || Config.maxDailyAdminShopSell > 0 || Config.maxDailyShopBuy > 0 || Config.maxDailyShopSell > 0;
+    }
+    
+    public static void handleDateProcessing() {
+        Time time = new Time();
+        
+        Date recTomorrow = time.parseDate(database.getString("Util.Tomorrow"));
+        Date recToday = time.parseDate(database.getString("Util.Today"));
+        
+        if(recToday.equals(recTomorrow)) {
+            database.set("Util.Today", time.formatDate(time.getToday()));
+            database.set("Util.Tomorrow", time.formatDate(time.getTomorrow()));
+        } else if(time.getToday().equals(recTomorrow) || time.getToday().after(recTomorrow)) {
+            database.set("Util.Today", time.formatDate(time.getToday()));
+            database.set("Util.Tomorrow", time.formatDate(time.getTomorrow()));
+            
+            ConfigurationSection cs = database.getConfigurationSection("Players");
+            
+            if(cs != null) {
+                for(String s : cs.getKeys(false)) {
+                    if(cs.getInt(s + ".AdminSoldToday") > 0) {
+                        cs.set(s + ".AdminSoldToday", 0);
+                    }
+                    if(cs.getInt(s + ".SoldToday") > 0) {
+                        cs.set(s + ".SoldToday", 0);
+                    }
+                    if(cs.getInt(s + ".AdminBoughtToday") > 0) {
+                        cs.set(s + ".AdminBoughtToday", 0);
+                    }
+                    if(cs.getInt(s + ".BoughtToday") > 0) {
+                        cs.set(s + ".BoughtToday", 0);
+                    }
+                }
+                save();
+            }
+        }
     }
     
     public static void incrementDailySold(String player, boolean adminShop, int amount) {
