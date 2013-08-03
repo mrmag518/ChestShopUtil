@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -60,9 +61,14 @@ public class Time {
         try {
             return dateFormat.parse(simpleDateFormat);
         } catch (ParseException ex) {
-            Logger.getLogger(Time.class.getName()).log(Level.SEVERE, "An error ocurred when trying to parse a simpledateformat into a date.", ex);
+            Logger.getLogger(Time.class.getName()).log(Level.SEVERE, "An error ocurred when trying to parse a SimpleDateFormat into a Date.", ex);
         }
         return null;
+    }
+    
+    public String formatDate(Date date) {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        return dateFormat.format(date);
     }
     
     public String getSimpleDate() {
@@ -97,5 +103,24 @@ public class Time {
     
     public int getHoursFromMS(long ms) {
         return (int) TimeUnit.MILLISECONDS.toHours(ms);
+    }
+    
+    public Date getToday() {
+        Calendar d = new GregorianCalendar();
+        d.set(Calendar.HOUR_OF_DAY, 0);
+        d.set(Calendar.MINUTE, 0);
+        d.set(Calendar.SECOND, 0);
+        d.set(Calendar.MILLISECOND, 0);
+        return d.getTime();
+    }
+    
+    public Date getTomorrow() {
+        Calendar d = new GregorianCalendar();
+        d.set(Calendar.HOUR_OF_DAY, 0);
+        d.set(Calendar.MINUTE, 0);
+        d.set(Calendar.SECOND, 0);
+        d.set(Calendar.MILLISECOND, 0);
+        d.add(Calendar.DAY_OF_MONTH, 1);
+        return d.getTime();
     }
 }

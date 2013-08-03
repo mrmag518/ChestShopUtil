@@ -5,6 +5,7 @@ import com.mrmag518.ChestShopUtil.Util.Time;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.configuration.ConfigurationSection;
@@ -33,39 +34,48 @@ public class ShopDB {
     private static void load() {
         database = getDB();
         Time time = new Time();
-        long currTime = System.currentTimeMillis();
         
-        if(database.get("Util.SystemMS") == null) {
-            database.set("Util.SystemMS", currTime);
-        } else {
-            long timeSet = database.getLong("Util.SystemMS");
-            long diff = currTime - timeSet;
+        if(database.get("Util.SystemMS") != null) {
+            database.set("Util.SystemMS", null);
+        }
+        database.addDefault("Util.Today", time.formatDate(time.getToday()));
+        database.addDefault("Util.Tomorrow", time.formatDate(time.getTomorrow()));
+        
+        Date recTomorrow = time.parseDate(database.getString("Util.Tomorrow"));
+        Date recToday = time.parseDate(database.getString("Util.Today"));
+        
+        if(recToday.equals(recTomorrow)) {
+            database.set("Util.Today", time.formatDate(time.getToday()));
+            database.set("Util.Tomorrow", time.formatDate(time.getTomorrow()));
+        } else if(time.getToday().equals(recTomorrow) || time.getToday().after(recTomorrow)) {
+            database.set("Util.Today", time.formatDate(time.getToday()));
+            database.set("Util.Tomorrow", time.formatDate(time.getTomorrow()));
             
-            if(time.getHoursFromMS(diff) >= 24) {
-                database.set("Util.SystemMS", currTime);
-                
-                ConfigurationSection cs = database.getConfigurationSection("Players");
-                
-                if(cs != null) {
-                    for(String s : cs.getKeys(false)) {
-                        if(cs.getInt(s + ".AdminSoldToday") > 0) {
-                            cs.set(s + ".AdminSoldToday", 0);
-                        }
-                        if(cs.getInt(s + ".SoldToday") > 0) {
-                            cs.set(s + ".SoldToday", 0);
-                        }
-                        if(cs.getInt(s + ".AdminBoughtToday") > 0) {
-                            cs.set(s + ".AdminBoughtToday", 0);
-                        }
-                        if(cs.getInt(s + ".BoughtToday") > 0) {
-                            cs.set(s + ".BoughtToday", 0);
-                        }
+            ConfigurationSection cs = database.getConfigurationSection("Players");
+            
+            if(cs != null) {
+                for(String s : cs.getKeys(false)) {
+                    if(cs.getInt(s + ".AdminSoldToday") > 0) {
+                        cs.set(s + ".AdminSoldToday", 0);
                     }
-                    save();
+                    if(cs.getInt(s + ".SoldToday") > 0) {
+                        cs.set(s + ".SoldToday", 0);
+                    }
+                    if(cs.getInt(s + ".AdminBoughtToday") > 0) {
+                        cs.set(s + ".AdminBoughtToday", 0);
+                    }
+                    if(cs.getInt(s + ".BoughtToday") > 0) {
+                        cs.set(s + ".BoughtToday", 0);
+                    }
                 }
+                save();
             }
         }
         database.addDefault("Util.ShopPermSearchCap", 508);
+        
+        if(database.getConfigurationSection("Players") == null) {
+            database.createSection("Players");
+        }
         
         cacheVariables();
         getDB().options().copyDefaults(true);

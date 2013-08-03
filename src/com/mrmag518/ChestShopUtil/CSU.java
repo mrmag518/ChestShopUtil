@@ -3,7 +3,6 @@ package com.mrmag518.ChestShopUtil;
 import com.mrmag518.ChestShopUtil.Files.Local;
 import com.mrmag518.ChestShopUtil.Files.Config;
 import com.mrmag518.ChestShopUtil.Files.ShopDB;
-import com.mrmag518.ChestShopUtil.Util.Cooldown;
 import com.mrmag518.ChestShopUtil.Util.EcoHandler;
 import com.mrmag518.ChestShopUtil.Util.Log;
 import com.mrmag518.ChestShopUtil.Util.UpdateThread;
