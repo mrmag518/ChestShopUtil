@@ -38,7 +38,6 @@ public class CSU extends JavaPlugin {
     @Override
     public void onDisable() {
         timeChecker = null;
-        Cooldown.clear();
         Log.info("Version " + getVersion() + " disabled.");
     }
     
