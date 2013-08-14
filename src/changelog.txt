@@ -1,7 +1,11 @@
 Version 1.2
 * Configuration management has been rewritten.
 ** Will convert your old configurations automatically.
-* 
+* Start-up performance improvements.
+* Update notifications has been improved.
+* Fixed errors being thrown on shutdown when overriding the .jar file while the server is running.
+* Date handling has been rewritten.
+** Anything that is supposed to reset every 24th hour will now reset pretty accuratelly at midnight.
 
 Version 1.1
 * shops.yml format has changed in order to give better support for additional entries.

@@ -48,7 +48,7 @@ public class Local {
         local.addDefault("SHOPEDIT_USAGE_L1", "%prefix% &fAllows you to modify a shop sign.");
         local.addDefault("SHOPEDIT_USAGE_L2", "%prefix% &fCommand syntax: /shopedit <owner|amount|price|item> <text/number>");
         local.addDefault("SHOPEDIT_CANT_MODIFY_OTHERS", "%prefix% &fYou may only edit your own shops!");
-        local.addDefault("NOT_SIGN", "%prefix% &fThat is not a sign!");
+        local.addDefault("NOT_SIGN", "%prefix% &fThat block is not a sign!");
         local.addDefault("INVALID_SIGN", "%prefix% &fThat is not a valid chestshop sign!");
         local.addDefault("SHOPEDIT_OWNER_EDIT_SUCCESS", "%prefix% &fShop owner changed to '%owner%'!");
         local.addDefault("INVALID_AMOUNT", "%prefix% &f'%amount%' is not a valid amount!");

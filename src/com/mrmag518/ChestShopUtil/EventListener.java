@@ -16,7 +16,6 @@ import com.mrmag518.ChestShopUtil.Files.ShopDB;
 import com.mrmag518.ChestShopUtil.Util.Cooldown;
 import com.mrmag518.ChestShopUtil.Util.Log;
 
-import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
